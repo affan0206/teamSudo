@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 import {
   createInitialSyntheticDataset,
   DEFAULT_RISK_THRESHOLDS,
-} from '../src/data/syntheticCohort';
+} from './initialSeedState.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -18,9 +18,66 @@ const DATA_DIR = process.env.VERCEL
 const STORE_PATH = path.join(DATA_DIR, 'cohort_store.json');
 const SECRET_PATH = path.join(DATA_DIR, 'session_secret.txt');
 
+const FALLBACK_PROVISIONED_ACCOUNTS = [
+  {
+    id: 'usr-fac-001',
+    email: 'aris.thorne@demo.university.edu',
+    fullName: 'Dr. Aris Thorne',
+    role: 'FACULTY',
+    studentId: null,
+    department: 'Computer Science & Engineering',
+    assignedTitle: 'Faculty Advisor & Academic Coordinator',
+    passwordSalt: 'd423fc9c2ff89c7329b146d003735791',
+    passwordHash:
+      '57b9bdce96f46ef2ac4b4e0164f9f155ac65258e69bdc537e01d24f6830aa83472524f8657d25c4a9002467e210608bd709d44b7fa2ab598d807f6163c594c89',
+  },
+  {
+    id: 'usr-stu-001',
+    email: 'aarav.mehta@demo.university.edu',
+    fullName: 'Aarav Mehta',
+    role: 'STUDENT',
+    studentId: 'stu-001',
+    department: 'Computer Science & Engineering',
+    assignedTitle: 'B.Tech CSE · Semester 4 (CS2024-001)',
+    passwordSalt: '485955eb200f2aed819779e0dcb99742',
+    passwordHash:
+      '026be9464fe5e25ef303e1f48210acb784d5a202e6a3c94c451172684d142e718ee3355e5982f93e7ec7c1d85eded69a1f47d655c11d82f6f1b20f3faa28723c',
+  },
+  {
+    id: 'usr-stu-007',
+    email: 'rohan.deshmukh@demo.university.edu',
+    fullName: 'Rohan Deshmukh',
+    role: 'STUDENT',
+    studentId: 'stu-007',
+    department: 'Computer Science & Engineering',
+    assignedTitle: 'B.Tech CSE · Semester 4 (CS2024-007)',
+    passwordSalt: '9633f505962b7c822619062e8fdc070e',
+    passwordHash:
+      'c3f0aad2197d19b463c79dba8f9846a5aa7317da237a394c022a81073dae715f3b6f332846e08e0f24c969defb0f23b104499b78c8ce27dae74e0dea4057e28c',
+  },
+  {
+    id: 'usr-stu-015',
+    email: 'priya.sundaram@demo.university.edu',
+    fullName: 'Priya Sundaram',
+    role: 'STUDENT',
+    studentId: 'stu-015',
+    department: 'Computer Science & Engineering',
+    assignedTitle: 'B.Tech CSE · Semester 4 (CS2024-015)',
+    passwordSalt: 'adb163db16a21aae33875312c04bdb52',
+    passwordHash:
+      '436534c7f5f87f098c7730c5ac3f021ee2106ef883dc486eb0cb8825a50ea05f63633fe4ebe10d77bbcc4e1262ec1fa677bc09a2767951b435a83735d350f8d7',
+  },
+];
+
+let memoryStateFallback = null;
+
 function ensureDataDir() {
-  if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR, { recursive: true });
+  try {
+    if (!fs.existsSync(DATA_DIR)) {
+      fs.mkdirSync(DATA_DIR, { recursive: true });
+    }
+  } catch {
+    // Ignore on read-only serverless fs
   }
 }
 
@@ -49,8 +106,15 @@ const SESSION_SECRET = getServerSigningSecret();
 const revokedTokenIds = new Set();
 
 function loadProvisionedAccounts() {
-  const raw = fs.readFileSync(ACCOUNTS_PATH, 'utf8');
-  return JSON.parse(raw);
+  try {
+    if (fs.existsSync(ACCOUNTS_PATH)) {
+      const raw = fs.readFileSync(ACCOUNTS_PATH, 'utf8');
+      return JSON.parse(raw);
+    }
+  } catch {
+    // Use fallback accounts
+  }
+  return FALLBACK_PROVISIONED_ACCOUNTS;
 }
 
 function loadServerState() {
@@ -64,11 +128,15 @@ function loadServerState() {
         Array.isArray(parsed.dataset.students) &&
         parsed.thresholds
       ) {
+        memoryStateFallback = parsed;
         return parsed;
       }
     }
   } catch {
-    // Re-seed if corrupted
+    // Re-seed if corrupted or unavailable
+  }
+  if (memoryStateFallback) {
+    return memoryStateFallback;
   }
   const initial = {
     dataset: createInitialSyntheticDataset(),
@@ -79,8 +147,13 @@ function loadServerState() {
 }
 
 function saveServerState(state) {
+  memoryStateFallback = state;
   ensureDataDir();
-  fs.writeFileSync(STORE_PATH, JSON.stringify(state, null, 2), 'utf8');
+  try {
+    fs.writeFileSync(STORE_PATH, JSON.stringify(state, null, 2), 'utf8');
+  } catch {
+    // Ignore write errors in read-only environments; memoryStateFallback holds state
+  }
 }
 
 function toPublicUserProfile(account) {
