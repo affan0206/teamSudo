@@ -1,5 +1,6 @@
 import crypto from 'node:crypto';
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
@@ -11,7 +12,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const ACCOUNTS_PATH = path.join(__dirname, 'provisionedAccounts.json');
-const DATA_DIR = path.join(__dirname, '.data');
+const DATA_DIR = process.env.VERCEL
+  ? path.join(os.tmpdir(), 'academic-insight-data')
+  : path.join(__dirname, '.data');
 const STORE_PATH = path.join(DATA_DIR, 'cohort_store.json');
 const SECRET_PATH = path.join(DATA_DIR, 'session_secret.txt');
 
@@ -24,6 +27,9 @@ function ensureDataDir() {
 function getServerSigningSecret() {
   if (process.env.ACADEMIC_INSIGHT_SESSION_SECRET) {
     return process.env.ACADEMIC_INSIGHT_SESSION_SECRET;
+  }
+  if (process.env.VERCEL) {
+    return 'academic-insight-vercel-hmac-secret-2026-cse';
   }
   ensureDataDir();
   try {
@@ -674,6 +680,16 @@ function extractRequestToken(req) {
 }
 
 function readJsonBody(req) {
+  if (req.body && typeof req.body === 'object') {
+    return Promise.resolve(req.body);
+  }
+  if (typeof req.body === 'string' && req.body.length > 0) {
+    try {
+      return Promise.resolve(JSON.parse(req.body));
+    } catch (err) {
+      return Promise.reject(err);
+    }
+  }
   return new Promise((resolve, reject) => {
     let raw = '';
     req.on('data', (chunk) => {
@@ -706,138 +722,142 @@ function sendJson(res, statusCode, payload, extraHeaders = {}) {
   res.end(JSON.stringify(payload));
 }
 
+export async function handleApiHttpRequest(req, res) {
+  const rawUrl = req.url || '';
+  const urlObj = new URL(rawUrl, 'http://localhost');
+  const pathname = urlObj.pathname;
+  const method = (req.method || 'GET').toUpperCase();
+  const token = extractRequestToken(req);
+
+  try {
+    // 1. POST /api/auth/login
+    if (pathname === '/api/auth/login' && method === 'POST') {
+      const body = await readJsonBody(req);
+      const result = authenticateUserCredentials(body.email, body.password);
+      if (result.authenticated && result.token) {
+        return sendJson(
+          res,
+          result.status,
+          {
+            authenticated: true,
+            user: result.user,
+            token: result.token,
+          },
+          {
+            'Set-Cookie': `ai_session=${encodeURIComponent(
+              result.token
+            )}; Path=/; HttpOnly; SameSite=Lax; Max-Age=43200`,
+          }
+        );
+      }
+      return sendJson(res, result.status, {
+        authenticated: false,
+        user: null,
+        error: result.error,
+      });
+    }
+
+    // 2. GET /api/auth/session
+    if (pathname === '/api/auth/session' && method === 'GET') {
+      const result = verifySessionToken(token);
+      return sendJson(res, result.status, {
+        authenticated: result.authenticated,
+        user: result.user,
+        error: result.error,
+      });
+    }
+
+    // 3. POST /api/auth/logout
+    if (pathname === '/api/auth/logout' && method === 'POST') {
+      revokeSessionToken(token);
+      return sendJson(
+        res,
+        200,
+        { authenticated: false, user: null },
+        {
+          'Set-Cookie':
+            'ai_session=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0',
+        }
+      );
+    }
+
+    // 4. POST /api/auth/reset-password
+    if (pathname === '/api/auth/reset-password' && method === 'POST') {
+      const body = await readJsonBody(req);
+      const result = requestPasswordResetNotice(body.email);
+      return sendJson(res, result.status, result);
+    }
+
+    // 5. GET /api/data
+    if (pathname === '/api/data' && method === 'GET') {
+      const requestedStudentId = urlObj.searchParams.get('studentId');
+      const result = getAuthorizedDatasetForSession(token, requestedStudentId);
+      return sendJson(res, result.status, result);
+    }
+
+    // 6. POST /api/data/score
+    if (pathname === '/api/data/score' && method === 'POST') {
+      const body = await readJsonBody(req);
+      const result = serverUpsertAssessmentScore(token, body);
+      return sendJson(res, result.status, result);
+    }
+
+    // 7. POST /api/data/attendance
+    if (pathname === '/api/data/attendance' && method === 'POST') {
+      const body = await readJsonBody(req);
+      const result = serverUpsertAttendanceRecord(token, body);
+      return sendJson(res, result.status, result);
+    }
+
+    // 8. POST /api/data/interventions
+    if (pathname === '/api/data/interventions' && method === 'POST') {
+      const body = await readJsonBody(req);
+      const result = serverCreateInterventionRecord(token, body);
+      return sendJson(res, result.status, result);
+    }
+
+    // 9. PATCH /api/data/interventions
+    if (pathname === '/api/data/interventions' && method === 'PATCH') {
+      const body = await readJsonBody(req);
+      const result = serverUpdateInterventionRecord(token, body);
+      return sendJson(res, result.status, result);
+    }
+
+    // 10. POST /api/data/csv
+    if (pathname === '/api/data/csv' && method === 'POST') {
+      const body = await readJsonBody(req);
+      const result = serverCommitValidatedCsvRows(token, body.validRows);
+      return sendJson(res, result.status, result);
+    }
+
+    // 11. PUT /api/data/thresholds
+    if (pathname === '/api/data/thresholds' && method === 'PUT') {
+      const body = await readJsonBody(req);
+      const result = serverSaveRiskThresholds(token, body.thresholds);
+      return sendJson(res, result.status, result);
+    }
+
+    // 12. POST /api/data/reset
+    if (pathname === '/api/data/reset' && method === 'POST') {
+      const result = serverResetDemoDataset(token);
+      return sendJson(res, result.status, result);
+    }
+
+    return sendJson(res, 404, { error: 'API endpoint not found.' });
+  } catch (err) {
+    return sendJson(res, 500, {
+      error: err instanceof Error ? err.message : 'Internal server error',
+    });
+  }
+}
+
 function attachApiMiddleware(middlewares) {
   middlewares.use(async (req, res, next) => {
     const rawUrl = req.url || '';
     if (!rawUrl.startsWith('/api/')) {
       return next();
     }
-
-    const urlObj = new URL(rawUrl, 'http://localhost');
-    const pathname = urlObj.pathname;
-    const method = (req.method || 'GET').toUpperCase();
-    const token = extractRequestToken(req);
-
-    try {
-      // 1. POST /api/auth/login
-      if (pathname === '/api/auth/login' && method === 'POST') {
-        const body = await readJsonBody(req);
-        const result = authenticateUserCredentials(body.email, body.password);
-        if (result.authenticated && result.token) {
-          return sendJson(
-            res,
-            result.status,
-            {
-              authenticated: true,
-              user: result.user,
-              token: result.token,
-            },
-            {
-              'Set-Cookie': `ai_session=${encodeURIComponent(
-                result.token
-              )}; Path=/; HttpOnly; SameSite=Lax; Max-Age=43200`,
-            }
-          );
-        }
-        return sendJson(res, result.status, {
-          authenticated: false,
-          user: null,
-          error: result.error,
-        });
-      }
-
-      // 2. GET /api/auth/session
-      if (pathname === '/api/auth/session' && method === 'GET') {
-        const result = verifySessionToken(token);
-        return sendJson(res, result.status, {
-          authenticated: result.authenticated,
-          user: result.user,
-          error: result.error,
-        });
-      }
-
-      // 3. POST /api/auth/logout
-      if (pathname === '/api/auth/logout' && method === 'POST') {
-        revokeSessionToken(token);
-        return sendJson(
-          res,
-          200,
-          { authenticated: false, user: null },
-          {
-            'Set-Cookie':
-              'ai_session=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0',
-          }
-        );
-      }
-
-      // 4. POST /api/auth/reset-password
-      if (pathname === '/api/auth/reset-password' && method === 'POST') {
-        const body = await readJsonBody(req);
-        const result = requestPasswordResetNotice(body.email);
-        return sendJson(res, result.status, result);
-      }
-
-      // 5. GET /api/data
-      if (pathname === '/api/data' && method === 'GET') {
-        const requestedStudentId = urlObj.searchParams.get('studentId');
-        const result = getAuthorizedDatasetForSession(token, requestedStudentId);
-        return sendJson(res, result.status, result);
-      }
-
-      // 6. POST /api/data/score
-      if (pathname === '/api/data/score' && method === 'POST') {
-        const body = await readJsonBody(req);
-        const result = serverUpsertAssessmentScore(token, body);
-        return sendJson(res, result.status, result);
-      }
-
-      // 7. POST /api/data/attendance
-      if (pathname === '/api/data/attendance' && method === 'POST') {
-        const body = await readJsonBody(req);
-        const result = serverUpsertAttendanceRecord(token, body);
-        return sendJson(res, result.status, result);
-      }
-
-      // 8. POST /api/data/interventions
-      if (pathname === '/api/data/interventions' && method === 'POST') {
-        const body = await readJsonBody(req);
-        const result = serverCreateInterventionRecord(token, body);
-        return sendJson(res, result.status, result);
-      }
-
-      // 9. PATCH /api/data/interventions
-      if (pathname === '/api/data/interventions' && method === 'PATCH') {
-        const body = await readJsonBody(req);
-        const result = serverUpdateInterventionRecord(token, body);
-        return sendJson(res, result.status, result);
-      }
-
-      // 10. POST /api/data/csv
-      if (pathname === '/api/data/csv' && method === 'POST') {
-        const body = await readJsonBody(req);
-        const result = serverCommitValidatedCsvRows(token, body.validRows);
-        return sendJson(res, result.status, result);
-      }
-
-      // 11. PUT /api/data/thresholds
-      if (pathname === '/api/data/thresholds' && method === 'PUT') {
-        const body = await readJsonBody(req);
-        const result = serverSaveRiskThresholds(token, body.thresholds);
-        return sendJson(res, result.status, result);
-      }
-
-      // 12. POST /api/data/reset
-      if (pathname === '/api/data/reset' && method === 'POST') {
-        const result = serverResetDemoDataset(token);
-        return sendJson(res, result.status, result);
-      }
-
-      return sendJson(res, 404, { error: 'API endpoint not found.' });
-    } catch (err) {
-      return sendJson(res, 500, {
-        error: err instanceof Error ? err.message : 'Internal server error',
-      });
-    }
+    return handleApiHttpRequest(req, res);
   });
 }
 

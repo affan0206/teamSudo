@@ -1,7 +1,16 @@
 {
+  "functions": {
+    "api/index.mjs": {
+      "includeFiles": "server/**"
+    }
+  },
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/api/(.*)",
+      "destination": "/api/index.mjs"
+    },
+    {
+      "source": "/((?!api/|assets/|study-notes-pdf/).*)",
       "destination": "/index.html"
     }
   ]
