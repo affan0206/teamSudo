@@ -78,6 +78,13 @@ export default {
         },
       },
       fontFamily: {
+        display: [
+          '"Plus Jakarta Sans"',
+          'Inter',
+          '-apple-system',
+          'BlinkMacSystemFont',
+          'sans-serif',
+        ],
         sans: [
           'Inter',
           '-apple-system',
@@ -97,9 +104,11 @@ export default {
         ],
       },
       boxShadow: {
-        card: '0 1px 2px 0 rgba(10, 36, 99, 0.04)',
+        card: '0 1px 3px 0 rgba(10, 36, 99, 0.04), 0 1px 2px -1px rgba(30, 27, 24, 0.03)',
         elevated:
-          '0 8px 24px -4px rgba(10, 36, 99, 0.10), 0 2px 6px -1px rgba(30, 27, 24, 0.05)',
+          '0 14px 34px -6px rgba(10, 36, 99, 0.14), 0 4px 10px -2px rgba(30, 27, 24, 0.06)',
+        monolith:
+          '0 20px 44px -10px rgba(10, 36, 99, 0.28), 0 4px 12px -2px rgba(10, 36, 99, 0.12)',
       },
     },
   },

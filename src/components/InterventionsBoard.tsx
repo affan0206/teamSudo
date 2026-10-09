@@ -93,13 +93,14 @@ export const InterventionsBoard: React.FC<InterventionsBoardProps> = ({
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-stone-border pb-5">
         <div>
-          <div className="text-[11px] font-semibold uppercase tracking-wider text-bluebell mb-1">
-            Academic Support Operations
+          <div className="section-kicker mb-1.5">
+            <span className="section-kicker-num">01 //</span>
+            <span>Academic Support Operations</span>
           </div>
-          <h1 className="text-2xl font-semibold text-ink-primary tracking-tight">
+          <h1 className="font-display text-2xl font-bold text-ink-primary tracking-tight">
             Faculty Interventions &amp; Follow-Up Tracker
           </h1>
-          <p className="text-sm text-ink-secondary mt-1">
+          <p className="text-xs text-ink-secondary mt-1">
             Monitor planned, active, and completed academic support actions across the cohort.
           </p>
         </div>
@@ -124,8 +125,11 @@ export const InterventionsBoard: React.FC<InterventionsBoardProps> = ({
               : 'hover:bg-subtle/50'
           }`}
         >
-          <div className="text-xs font-medium text-ink-secondary">Total Recorded</div>
-          <div className="text-2xl font-semibold text-ink-primary tabular-nums mt-1">
+          <div className="section-kicker">
+            <span className="section-kicker-num">A //</span>
+            <span>Total Recorded</span>
+          </div>
+          <div className="font-display text-2xl font-bold text-ink-primary tabular-nums mt-2">
             {dataset.interventions.length}
           </div>
           <div className="text-[11px] text-ink-muted mt-1">All cohort support actions</div>
@@ -140,11 +144,14 @@ export const InterventionsBoard: React.FC<InterventionsBoardProps> = ({
               : 'hover:bg-subtle/50'
           }`}
         >
-          <div className="text-xs font-medium text-ink-secondary flex items-center justify-between">
-            <span>Planned</span>
+          <div className="flex items-center justify-between">
+            <div className="section-kicker">
+              <span className="section-kicker-num">B //</span>
+              <span>Planned</span>
+            </div>
             <Clock className="w-3.5 h-3.5 text-status-warning-dot" />
           </div>
-          <div className="text-2xl font-semibold text-ink-primary tabular-nums mt-1">
+          <div className="font-display text-2xl font-bold text-ink-primary tabular-nums mt-2">
             {plannedCount}
           </div>
           <div className="text-[11px] text-ink-muted mt-1">Scheduled for check-in</div>
@@ -159,11 +166,14 @@ export const InterventionsBoard: React.FC<InterventionsBoardProps> = ({
               : 'hover:bg-subtle/50'
           }`}
         >
-          <div className="text-xs font-medium text-ink-secondary flex items-center justify-between">
-            <span>In Progress</span>
+          <div className="flex items-center justify-between">
+            <div className="section-kicker">
+              <span className="section-kicker-num">C //</span>
+              <span>In Progress</span>
+            </div>
             <Clock className="w-3.5 h-3.5 text-bluebell" />
           </div>
-          <div className="text-2xl font-semibold text-ink-primary tabular-nums mt-1">
+          <div className="font-display text-2xl font-bold text-ink-primary tabular-nums mt-2">
             {inProgressCount}
           </div>
           <div className="text-[11px] text-ink-muted mt-1">Active mentoring or labs</div>
@@ -178,11 +188,14 @@ export const InterventionsBoard: React.FC<InterventionsBoardProps> = ({
               : 'hover:bg-subtle/50'
           }`}
         >
-          <div className="text-xs font-medium text-ink-secondary flex items-center justify-between">
-            <span>Completed</span>
+          <div className="flex items-center justify-between">
+            <div className="section-kicker">
+              <span className="section-kicker-num">D //</span>
+              <span>Completed</span>
+            </div>
             <CheckCircle2 className="w-3.5 h-3.5 text-status-success-dot" />
           </div>
-          <div className="text-2xl font-semibold text-ink-primary tabular-nums mt-1">
+          <div className="font-display text-2xl font-bold text-ink-primary tabular-nums mt-2">
             {completedCount}
           </div>
           <div className="text-[11px] text-ink-muted mt-1">Closed with outcome notes</div>
@@ -193,7 +206,11 @@ export const InterventionsBoard: React.FC<InterventionsBoardProps> = ({
       <section className="card-surface overflow-hidden">
         <div className="px-5 py-4 border-b border-stone-border flex items-center justify-between">
           <div>
-            <h2 className="text-base font-semibold text-ink-primary">
+            <div className="section-kicker mb-0.5">
+              <span className="section-kicker-num">02 //</span>
+              <span>Case Management Ledger</span>
+            </div>
+            <h2 className="font-display text-base font-bold text-ink-primary">
               Intervention Log ({filteredInterventions.length})
             </h2>
             <p className="text-xs text-ink-secondary mt-0.5">

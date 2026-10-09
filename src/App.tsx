@@ -424,10 +424,10 @@ export function App() {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-canvas flex items-center justify-center p-6">
-        <div className="flex items-center gap-2.5 text-xs font-medium text-ink-secondary">
-          <Loader2 className="w-4 h-4 text-imperial animate-spin" />
-          <span>Verifying session...</span>
+      <div className="min-h-screen bg-ghost flex items-center justify-center p-6">
+        <div className="flex items-center gap-3 text-xs font-mono uppercase tracking-wider text-imperial">
+          <Loader2 className="w-4 h-4 text-bluebell animate-spin" />
+          <span>Verifying session credentials...</span>
         </div>
       </div>
     );
@@ -444,9 +444,9 @@ export function App() {
 
   if (dataLoading || !dataset) {
     return (
-      <div className="min-h-screen bg-canvas flex items-center justify-center p-6">
-        <div className="flex items-center gap-2.5 text-xs font-medium text-ink-secondary">
-          <Loader2 className="w-4 h-4 text-imperial animate-spin" />
+      <div className="min-h-screen bg-ghost flex items-center justify-center p-6">
+        <div className="flex items-center gap-3 text-xs font-mono uppercase tracking-wider text-imperial">
+          <Loader2 className="w-4 h-4 text-bluebell animate-spin" />
           <span>Loading authorized academic records...</span>
         </div>
       </div>
@@ -457,56 +457,79 @@ export function App() {
     (i) => i.status === 'PLANNED' || i.status === 'IN_PROGRESS'
   ).length;
 
+  const highRiskTotal = evaluations.filter((e) => e.riskLevel === 'HIGH').length;
+
   const facultyNavItems: {
     id: FacultyTab;
+    index: string;
     label: string;
     Icon: React.FC<{ className?: string }>;
     badge?: string;
+    badgeTone?: 'neutral' | 'danger' | 'info';
   }[] = [
     {
       id: 'OVERVIEW',
-      label: 'Overview',
+      index: '01',
+      label: 'Cohort Overview',
       Icon: LayoutDashboard,
+      badge: highRiskTotal > 0 ? `${highRiskTotal} High` : undefined,
+      badgeTone: 'danger',
     },
     {
       id: 'DIRECTORY',
-      label: 'Students',
+      index: '02',
+      label: 'Student Directory',
       Icon: Users,
       badge: `${evaluations.length}`,
+      badgeTone: 'neutral',
     },
     {
       id: 'PROFILE',
-      label: 'Student Profile',
+      index: '03',
+      label: 'Student Dossier',
       Icon: UserCheck,
+      badge: selectedEvaluation?.student.rollNumber.replace('CS24-', '#'),
+      badgeTone: 'info',
     },
     {
       id: 'RECORDS',
+      index: '04',
       label: 'Records & CSV',
       Icon: FileSpreadsheet,
     },
     {
       id: 'INTERVENTIONS',
+      index: '05',
       label: 'Interventions',
       Icon: ClipboardCheck,
       badge: activeInterventionsCount > 0 ? `${activeInterventionsCount}` : undefined,
+      badgeTone: 'info',
     },
   ];
 
+  const activeRouteLabel =
+    currentUser.role === 'STUDENT'
+      ? '01 // PERSONAL ACADEMIC STANDING'
+      : (() => {
+          const match = facultyNavItems.find((i) => i.id === activeTab);
+          return match ? `${match.index} // ${match.label.toUpperCase()}` : '01 // COHORT OVERVIEW';
+        })();
+
   const renderSidebarContent = () => (
-    <div className="flex flex-col justify-between h-full">
-      <div className="space-y-5">
-        {/* Brand Header */}
-        <div className="px-5 pt-5 pb-4 border-b border-stone-border flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-md bg-imperial flex items-center justify-center text-ghost shrink-0 shadow-card">
+    <div className="flex flex-col justify-between h-full bg-imperial text-ghost select-none">
+      <div className="space-y-6">
+        {/* Brand Masthead */}
+        <div className="px-5 pt-6 pb-5 border-b border-white/12 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-md bg-ghost text-imperial flex items-center justify-center shrink-0 shadow-card">
               <BookOpenCheck className="w-4 h-4" />
             </div>
             <div>
-              <div className="text-sm font-semibold tracking-tight text-imperial">
+              <div className="font-display text-sm font-bold tracking-tight text-ghost leading-none">
                 Academic Insight
               </div>
-              <div className="text-[11px] text-ink-muted">
-                {currentUser.role === 'FACULTY' ? 'Faculty Workspace' : 'Student Portal'}
+              <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-bluebell-border mt-1">
+                {currentUser.role === 'FACULTY' ? 'Faculty Intelligence' : 'Student Standing'}
               </div>
             </div>
           </div>
@@ -514,7 +537,7 @@ export function App() {
           <button
             type="button"
             onClick={() => setMobileMenuOpen(false)}
-            className="lg:hidden p-1 text-ink-muted hover:text-ink-primary rounded"
+            className="lg:hidden p-1 text-bluebell-border hover:text-ghost rounded transition-colors"
             aria-label="Close navigation menu"
           >
             <X className="w-4 h-4" />
@@ -523,35 +546,55 @@ export function App() {
 
         {/* Navigation Links (Role-Enforced) */}
         {currentUser.role === 'FACULTY' ? (
-          <div className="px-3">
+          <div className="px-3 space-y-2">
+            <div className="px-2.5 font-mono text-[10px] uppercase tracking-[0.14em] text-bluebell-border/75">
+              Navigation
+            </div>
             <nav aria-label="Faculty Navigation" className="space-y-1">
-              {facultyNavItems.map(({ id, label, Icon, badge }) => {
+              {facultyNavItems.map(({ id, index, label, Icon, badge, badgeTone }) => {
                 const isActive = activeTab === id;
                 return (
                   <button
                     key={id}
                     type="button"
                     onClick={() => handleSelectNavTab(id)}
-                    className={`w-full flex items-center justify-between px-3 py-2 text-xs font-medium rounded-md transition-colors ${
+                    className={`group relative w-full flex items-center justify-between px-3 py-2.5 text-xs rounded-md transition-all duration-150 ${
                       isActive
-                        ? 'bg-imperial text-ghost font-semibold shadow-card'
-                        : 'text-ink-secondary hover:text-imperial hover:bg-bluebell-light/70'
+                        ? 'bg-white/14 text-ghost font-semibold shadow-card'
+                        : 'text-bluebell-border/85 hover:text-ghost hover:bg-white/8'
                     }`}
                   >
+                    {isActive && (
+                      <span
+                        aria-hidden="true"
+                        className="absolute left-0 top-1.5 bottom-1.5 w-1 rounded-r bg-bluebell"
+                      />
+                    )}
                     <span className="flex items-center gap-2.5 truncate">
+                      <span
+                        className={`font-mono text-[10px] tabular-nums ${
+                          isActive ? 'text-bluebell-border' : 'text-bluebell-border/60'
+                        }`}
+                      >
+                        {index}
+                      </span>
                       <Icon
-                        className={`w-4 h-4 shrink-0 ${
-                          isActive ? 'text-bluebell-border' : 'text-ink-muted'
+                        className={`w-3.5 h-3.5 shrink-0 transition-colors ${
+                          isActive
+                            ? 'text-bluebell'
+                            : 'text-bluebell-border/70 group-hover:text-ghost'
                         }`}
                       />
                       <span className="truncate">{label}</span>
                     </span>
                     {badge && (
                       <span
-                        className={`ml-2 text-[11px] font-mono tabular-nums px-1.5 py-0.5 rounded ${
-                          isActive
-                            ? 'bg-white/15 text-ghost font-semibold'
-                            : 'text-imperial bg-bluebell-light border border-bluebell-border/60'
+                        className={`ml-2 text-[10px] font-mono tabular-nums px-1.5 py-0.5 rounded ${
+                          badgeTone === 'danger'
+                            ? 'bg-magenta text-ghost font-semibold'
+                            : isActive
+                            ? 'bg-bluebell/30 text-ghost border border-bluebell/50'
+                            : 'bg-white/10 text-bluebell-border'
                         }`}
                       >
                         {badge}
@@ -563,56 +606,71 @@ export function App() {
             </nav>
           </div>
         ) : (
-          <div className="px-3">
+          <div className="px-3 space-y-2">
+            <div className="px-2.5 font-mono text-[10px] uppercase tracking-[0.14em] text-bluebell-border/75">
+              Portal View
+            </div>
             <nav aria-label="Student Navigation" className="space-y-1">
-              <div className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-md bg-imperial text-ghost shadow-card">
-                <GraduationCap className="w-4 h-4 shrink-0 text-bluebell-border" />
-                <span>My Academic Standing</span>
+              <div className="relative w-full flex items-center justify-between px-3 py-2.5 text-xs font-semibold rounded-md bg-white/14 text-ghost shadow-card">
+                <span
+                  aria-hidden="true"
+                  className="absolute left-0 top-1.5 bottom-1.5 w-1 rounded-r bg-bluebell"
+                />
+                <span className="flex items-center gap-2.5">
+                  <span className="font-mono text-[10px] text-bluebell-border">01</span>
+                  <GraduationCap className="w-4 h-4 shrink-0 text-bluebell" />
+                  <span>My Academic Standing</span>
+                </span>
               </div>
             </nav>
           </div>
         )}
       </div>
 
-      {/* Sidebar Footer: Authenticated Account & Role-Gated Controls */}
-      <div className="p-4 border-t border-stone-border space-y-3 bg-surface">
+      {/* Bottom Calibration & Identity Block */}
+      <div className="p-4 border-t border-white/12 space-y-3.5 bg-imperial-hover/50">
         {currentUser.role === 'FACULTY' && (
-          <div className="flex items-center justify-between gap-2 pb-2 border-b border-stone-border">
-            <button
-              type="button"
-              onClick={() => {
-                setIsThresholdsModalOpen(true);
-                setMobileMenuOpen(false);
-              }}
-              className="inline-flex items-center gap-1.5 text-xs font-medium text-ink-secondary hover:text-imperial transition-colors"
-            >
-              <SlidersHorizontal className="w-3.5 h-3.5 text-bluebell" />
-              <span>Risk Rules</span>
-            </button>
+          <div className="space-y-1.5 pb-3 border-b border-white/12">
+            <div className="px-1 font-mono text-[10px] uppercase tracking-[0.14em] text-bluebell-border/70">
+              System Calibration
+            </div>
+            <div className="grid grid-cols-2 gap-1.5">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsThresholdsModalOpen(true);
+                  setMobileMenuOpen(false);
+                }}
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded text-[11px] font-medium text-bluebell-border hover:text-ghost hover:bg-white/10 border border-white/10 transition-colors"
+              >
+                <SlidersHorizontal className="w-3 h-3 text-bluebell shrink-0" />
+                <span className="truncate">Risk Rules</span>
+              </button>
 
-            <button
-              type="button"
-              onClick={handleResetDemoData}
-              className="inline-flex items-center gap-1 text-xs font-medium text-ink-secondary hover:text-imperial transition-colors"
-              title="Reset cohort records to initial baseline (Faculty only)"
-            >
-              <RotateCcw className="w-3 h-3 text-bluebell" />
-              <span>Reset Demo</span>
-            </button>
+              <button
+                type="button"
+                onClick={handleResetDemoData}
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded text-[11px] font-medium text-bluebell-border hover:text-ghost hover:bg-white/10 border border-white/10 transition-colors"
+                title="Restore cohort records to default baseline"
+              >
+                <RotateCcw className="w-3 h-3 text-bluebell shrink-0" />
+                <span className="truncate">Reset Data</span>
+              </button>
+            </div>
           </div>
         )}
 
-        <div className="space-y-2">
-          <div className="flex items-center justify-between gap-2">
+        <div className="space-y-2.5">
+          <div className="flex items-start justify-between gap-2">
             <div className="min-w-0">
-              <div className="text-xs font-semibold text-ink-primary truncate">
+              <div className="text-xs font-semibold text-ghost truncate">
                 {currentUser.fullName}
               </div>
-              <div className="text-[11px] text-ink-muted truncate">
+              <div className="text-[11px] text-bluebell-border/80 truncate font-mono">
                 {currentUser.email}
               </div>
             </div>
-            <span className="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded bg-bluebell-light border border-bluebell-border text-imperial shrink-0">
+            <span className="text-[10px] font-mono font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded bg-bluebell/25 border border-bluebell/40 text-ghost shrink-0">
               {currentUser.role}
             </span>
           </div>
@@ -620,9 +678,9 @@ export function App() {
           <button
             type="button"
             onClick={handleLogout}
-            className="w-full btn-secondary py-1.5 text-xs justify-center"
+            className="w-full inline-flex items-center justify-center gap-2 px-3 py-1.5 text-xs font-medium rounded-md bg-white/10 hover:bg-white/18 text-ghost border border-white/15 transition-colors"
           >
-            <LogOut className="w-3.5 h-3.5 text-bluebell" />
+            <LogOut className="w-3.5 h-3.5 text-bluebell-border" />
             <span>Sign out</span>
           </button>
         </div>
@@ -631,28 +689,28 @@ export function App() {
   );
 
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row bg-canvas text-ink-primary">
-      {/* Desktop Left Sidebar */}
-      <aside className="hidden lg:block w-56 shrink-0 bg-surface border-r border-stone-border sticky top-0 h-screen">
+    <div className="min-h-screen flex flex-col lg:flex-row bg-ghost text-carbon">
+      {/* Desktop Left Architectural Sidebar */}
+      <aside className="hidden lg:block w-60 shrink-0 sticky top-0 h-screen shadow-monolith z-20">
         {renderSidebarContent()}
       </aside>
 
       {/* Mobile & Tablet Top Header */}
-      <header className="lg:hidden sticky top-0 z-30 bg-surface border-b border-stone-border px-4 py-3 flex items-center justify-between">
+      <header className="lg:hidden sticky top-0 z-30 bg-imperial text-ghost border-b border-white/12 px-4 py-3 flex items-center justify-between shadow-card">
         <div className="flex items-center gap-2.5">
           <button
             type="button"
             onClick={() => setMobileMenuOpen(true)}
-            className="p-1.5 -ml-1 text-ink-secondary hover:text-imperial rounded-md border border-stone-border bg-canvas"
+            className="p-1.5 -ml-1 text-bluebell-border hover:text-ghost rounded-md border border-white/15 bg-white/10"
             aria-label="Open navigation menu"
           >
             <Menu className="w-4 h-4" />
           </button>
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded bg-imperial flex items-center justify-center text-ghost">
+            <div className="w-6 h-6 rounded bg-ghost text-imperial flex items-center justify-center">
               <BookOpenCheck className="w-3.5 h-3.5" />
             </div>
-            <span className="text-sm font-semibold text-imperial">
+            <span className="font-display text-sm font-bold text-ghost">
               Academic Insight
             </span>
           </div>
@@ -661,9 +719,9 @@ export function App() {
         <button
           type="button"
           onClick={handleLogout}
-          className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded border border-stone-border bg-canvas text-ink-secondary hover:text-imperial"
+          className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded border border-white/15 bg-white/10 text-ghost hover:bg-white/20"
         >
-          <LogOut className="w-3.5 h-3.5 text-bluebell" />
+          <LogOut className="w-3.5 h-3.5 text-bluebell-border" />
           <span>Sign out</span>
         </button>
       </header>
@@ -672,10 +730,10 @@ export function App() {
       {mobileMenuOpen && (
         <div className="fixed inset-0 z-50 lg:hidden flex">
           <div
-            className="fixed inset-0 bg-carbon/35"
+            className="fixed inset-0 bg-carbon/50 backdrop-blur-[1px]"
             onClick={() => setMobileMenuOpen(false)}
           />
-          <div className="relative w-60 max-w-[80vw] bg-surface h-full shadow-elevated z-10">
+          <div className="relative w-64 max-w-[82vw] h-full shadow-elevated z-10">
             {renderSidebarContent()}
           </div>
         </div>
@@ -683,89 +741,119 @@ export function App() {
 
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-5 right-5 z-50 bg-imperial text-ghost px-4 py-2.5 rounded-md shadow-elevated text-xs font-medium flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-bluebell" />
+        <div
+          role="status"
+          className="fixed bottom-5 right-5 z-50 bg-imperial text-ghost px-4 py-2.5 rounded-md shadow-elevated border border-bluebell/40 text-xs font-medium flex items-center gap-2.5 animate-view-enter"
+        >
+          <span className="w-2 h-2 rounded-full bg-bluebell shrink-0" />
           <span>{toastMessage}</span>
         </div>
       )}
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
-        <main className="flex-1 max-w-[1200px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          {currentUser.role === 'STUDENT' ? (
-            selectedEvaluation ? (
-              <StudentSelfCheckView
-                evaluation={selectedEvaluation}
-                thresholds={thresholds}
-              />
-            ) : (
-              <div className="card-surface p-6 text-xs text-ink-secondary flex items-center gap-2">
-                <ShieldAlert className="w-4 h-4 text-magenta" />
-                <span>No student academic profile is bound to this account.</span>
-              </div>
-            )
-          ) : (
-            <>
-              {activeTab === 'OVERVIEW' && (
-                <OverviewDashboard
-                  dataset={dataset}
-                  evaluations={evaluations}
-                  thresholds={thresholds}
-                  onSelectStudent={handleOpenStudentProfile}
-                  onNavigateDirectoryWithFilter={handleNavigateDirectoryWithFilter}
-                  onNavigateInterventions={() => handleSelectNavTab('INTERVENTIONS')}
-                  onNavigateRecords={() => handleSelectNavTab('RECORDS')}
-                  onOpenThresholdsModal={() => setIsThresholdsModalOpen(true)}
-                />
-              )}
+        {/* Subtle Swiss Top Telemetry Bar */}
+        <div className="border-b border-stone-border bg-surface/80 backdrop-blur-sm px-4 sm:px-6 lg:px-10 py-2.5 flex flex-wrap items-center justify-between gap-2 text-[11px]">
+          <div className="flex items-center gap-2 font-mono text-ink-secondary">
+            <span className="w-1.5 h-1.5 rounded-full bg-bluebell" />
+            <span className="uppercase tracking-wider font-medium text-imperial">
+              {activeRouteLabel}
+            </span>
+            <span className="text-stone-strong hidden sm:inline">·</span>
+            <span className="hidden sm:inline text-ink-muted">
+              B.Tech CS — Sem {dataset.students[0]?.semester ?? 5} ({dataset.students.length} Students · {dataset.subjects.length} Subjects)
+            </span>
+          </div>
 
-              {activeTab === 'DIRECTORY' && (
-                <StudentDirectory
-                  dataset={dataset}
-                  evaluations={evaluations}
-                  thresholds={thresholds}
-                  initialRiskFilter={directoryRiskFilter}
-                  onSelectStudent={handleOpenStudentProfile}
-                />
-              )}
+          <div className="flex items-center gap-3 font-mono text-ink-muted tabular-nums">
+            <span>
+              Pass Floor: <strong className="text-carbon">{thresholds.passingScorePct}%</strong>
+            </span>
+            <span className="text-stone-strong">·</span>
+            <span>
+              Min Attendance:{' '}
+              <strong className="text-carbon">{thresholds.criticalAttendancePct}%</strong>
+            </span>
+          </div>
+        </div>
 
-              {activeTab === 'PROFILE' && selectedEvaluation && (
-                <StudentProfileView
+        <main className="flex-1 max-w-[1260px] w-full mx-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8">
+          <div key={currentUser.role === 'STUDENT' ? 'STUDENT' : activeTab} className="animate-view-enter">
+            {currentUser.role === 'STUDENT' ? (
+              selectedEvaluation ? (
+                <StudentSelfCheckView
                   evaluation={selectedEvaluation}
-                  allEvaluations={evaluations}
-                  dataset={dataset}
                   thresholds={thresholds}
-                  onBackToDirectory={() => handleSelectNavTab('DIRECTORY')}
-                  onSelectStudent={(id) => handleOpenStudentProfile(id)}
-                  onUpdateScore={handleUpdateScore}
-                  onUpdateAttendance={handleUpdateAttendance}
-                  onCreateIntervention={handleCreateIntervention}
-                  onUpdateIntervention={handleUpdateIntervention}
                 />
-              )}
+              ) : (
+                <div className="card-surface p-6 text-xs text-ink-secondary flex items-center gap-2">
+                  <ShieldAlert className="w-4 h-4 text-magenta" />
+                  <span>No student academic profile is bound to this account.</span>
+                </div>
+              )
+            ) : (
+              <>
+                {activeTab === 'OVERVIEW' && (
+                  <OverviewDashboard
+                    dataset={dataset}
+                    evaluations={evaluations}
+                    thresholds={thresholds}
+                    onSelectStudent={handleOpenStudentProfile}
+                    onNavigateDirectoryWithFilter={handleNavigateDirectoryWithFilter}
+                    onNavigateInterventions={() => handleSelectNavTab('INTERVENTIONS')}
+                    onNavigateRecords={() => handleSelectNavTab('RECORDS')}
+                    onOpenThresholdsModal={() => setIsThresholdsModalOpen(true)}
+                  />
+                )}
 
-              {activeTab === 'RECORDS' && (
-                <RecordsAndCsvView
-                  dataset={dataset}
-                  evaluations={evaluations}
-                  onUpdateScore={handleUpdateScore}
-                  onUpdateAttendance={handleUpdateAttendance}
-                  onCommitCsvRows={handleCommitCsv}
-                  onSelectStudent={handleOpenStudentProfile}
-                />
-              )}
+                {activeTab === 'DIRECTORY' && (
+                  <StudentDirectory
+                    dataset={dataset}
+                    evaluations={evaluations}
+                    thresholds={thresholds}
+                    initialRiskFilter={directoryRiskFilter}
+                    onSelectStudent={handleOpenStudentProfile}
+                  />
+                )}
 
-              {activeTab === 'INTERVENTIONS' && (
-                <InterventionsBoard
-                  dataset={dataset}
-                  evaluations={evaluations}
-                  onSelectStudent={handleOpenStudentProfile}
-                  onCreateIntervention={handleCreateIntervention}
-                  onUpdateIntervention={handleUpdateIntervention}
-                />
-              )}
-            </>
-          )}
+                {activeTab === 'PROFILE' && selectedEvaluation && (
+                  <StudentProfileView
+                    evaluation={selectedEvaluation}
+                    allEvaluations={evaluations}
+                    dataset={dataset}
+                    thresholds={thresholds}
+                    onBackToDirectory={() => handleSelectNavTab('DIRECTORY')}
+                    onSelectStudent={(id) => handleOpenStudentProfile(id)}
+                    onUpdateScore={handleUpdateScore}
+                    onUpdateAttendance={handleUpdateAttendance}
+                    onCreateIntervention={handleCreateIntervention}
+                    onUpdateIntervention={handleUpdateIntervention}
+                  />
+                )}
+
+                {activeTab === 'RECORDS' && (
+                  <RecordsAndCsvView
+                    dataset={dataset}
+                    evaluations={evaluations}
+                    onUpdateScore={handleUpdateScore}
+                    onUpdateAttendance={handleUpdateAttendance}
+                    onCommitCsvRows={handleCommitCsv}
+                    onSelectStudent={handleOpenStudentProfile}
+                  />
+                )}
+
+                {activeTab === 'INTERVENTIONS' && (
+                  <InterventionsBoard
+                    dataset={dataset}
+                    evaluations={evaluations}
+                    onSelectStudent={handleOpenStudentProfile}
+                    onCreateIntervention={handleCreateIntervention}
+                    onUpdateIntervention={handleUpdateIntervention}
+                  />
+                )}
+              </>
+            )}
+          </div>
         </main>
       </div>
 

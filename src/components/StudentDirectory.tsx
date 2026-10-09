@@ -126,16 +126,29 @@ export const StudentDirectory: React.FC<StudentDirectoryProps> = ({
     sectionFilter !== 'ALL' ||
     subjectFilter !== 'ALL';
 
+  const countByTier = useMemo(() => {
+    return {
+      ALL: evaluations.length,
+      HIGH: evaluations.filter((e) => e.riskLevel === 'HIGH').length,
+      MEDIUM: evaluations.filter((e) => e.riskLevel === 'MEDIUM').length,
+      LOW: evaluations.filter((e) => e.riskLevel === 'LOW').length,
+      INSUFFICIENT_DATA: evaluations.filter((e) => e.riskLevel === 'INSUFFICIENT_DATA')
+        .length,
+    };
+  }, [evaluations]);
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-7">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-stone-border">
-        <div>
-          <h1 className="text-xl font-semibold tracking-tight text-ink-primary">
+      <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-5 border-b border-stone-border">
+        <div className="space-y-1">
+          <div className="section-kicker">01 // Cohort Roster &amp; Audit</div>
+          <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-carbon">
             Student Directory
           </h1>
-          <p className="text-xs text-ink-secondary mt-0.5">
-            {filteredAndSorted.length} of {evaluations.length} students
+          <p className="text-xs sm:text-sm text-ink-secondary">
+            Showing <strong className="font-mono text-carbon">{filteredAndSorted.length}</strong> of{' '}
+            <strong className="font-mono text-carbon">{evaluations.length}</strong> enrolled student profiles
           </p>
         </div>
 
@@ -143,25 +156,25 @@ export const StudentDirectory: React.FC<StudentDirectoryProps> = ({
           <button
             type="button"
             onClick={resetFilters}
-            className="btn-secondary text-xs py-1.5"
+            className="btn-secondary text-xs py-2"
           >
-            <RotateCcw className="w-3.5 h-3.5" />
+            <RotateCcw className="w-3.5 h-3.5 text-bluebell" />
             <span>Reset Filters</span>
           </button>
         )}
-      </div>
+      </header>
 
       {/* Table with Single Filter Toolbar */}
       <div className="card-surface overflow-hidden">
-        <div className="p-4 border-b border-stone-border flex flex-wrap items-center justify-between gap-2.5">
+        <div className="p-4 sm:p-5 border-b border-stone-border flex flex-wrap items-center justify-between gap-3">
           <div className="inline-flex flex-wrap rounded-md p-0.5 bg-subtle border border-stone-border text-xs">
             {(
               [
-                { id: 'ALL', label: 'All' },
-                { id: 'HIGH', label: 'High Risk' },
-                { id: 'MEDIUM', label: 'Medium' },
-                { id: 'LOW', label: 'Low Risk' },
-                { id: 'INSUFFICIENT_DATA', label: 'Incomplete' },
+                { id: 'ALL', label: `All (${countByTier.ALL})` },
+                { id: 'HIGH', label: `High Risk (${countByTier.HIGH})` },
+                { id: 'MEDIUM', label: `Medium (${countByTier.MEDIUM})` },
+                { id: 'LOW', label: `On Track (${countByTier.LOW})` },
+                { id: 'INSUFFICIENT_DATA', label: `Incomplete (${countByTier.INSUFFICIENT_DATA})` },
               ] as { id: RiskLevel | 'ALL'; label: string }[]
             ).map((tab) => (
               <button
@@ -171,7 +184,7 @@ export const StudentDirectory: React.FC<StudentDirectoryProps> = ({
                 className={`px-2.5 py-1 rounded font-medium transition-colors ${
                   riskFilter === tab.id
                     ? 'bg-imperial text-ghost shadow-card'
-                    : 'text-ink-secondary hover:text-ink-primary'
+                    : 'text-ink-secondary hover:text-carbon'
                 }`}
               >
                 {tab.label}
@@ -221,79 +234,86 @@ export const StudentDirectory: React.FC<StudentDirectoryProps> = ({
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="border-b border-stone-border bg-subtle/60 text-[11px] font-semibold uppercase tracking-wider text-ink-muted">
-                <th className="py-2.5 px-4">
+              <tr className="border-b border-stone-border bg-subtle/60 font-mono text-[11px] font-semibold uppercase tracking-wider text-ink-muted">
+                <th className="py-3 px-4">
                   <button
                     type="button"
                     onClick={() => handleSort('ROLL')}
-                    className="inline-flex items-center gap-1 hover:text-ink-primary"
+                    className="inline-flex items-center gap-1 hover:text-carbon"
                   >
                     ID
                     <ArrowUpDown className="w-3 h-3" />
                   </button>
                 </th>
-                <th className="py-2.5 px-4">Student</th>
-                <th className="py-2.5 px-3">
+                <th className="py-3 px-4">Student</th>
+                <th className="py-3 px-3">
                   <button
                     type="button"
                     onClick={() => handleSort('PRIORITY')}
-                    className="inline-flex items-center gap-1 hover:text-ink-primary"
+                    className="inline-flex items-center gap-1 hover:text-carbon"
                   >
-                    Risk
+                    Standing
                     <ArrowUpDown className="w-3 h-3" />
                   </button>
                 </th>
-                <th className="py-2.5 px-3 text-right">
+                <th className="py-3 px-3 text-right">
                   <button
                     type="button"
                     onClick={() => handleSort('SCORE')}
-                    className="inline-flex items-center gap-1 hover:text-ink-primary ml-auto"
+                    className="inline-flex items-center gap-1 hover:text-carbon ml-auto"
                   >
                     Score
                     <ArrowUpDown className="w-3 h-3" />
                   </button>
                 </th>
-                <th className="py-2.5 px-3 text-right">
+                <th className="py-3 px-3 text-right">
                   <button
                     type="button"
                     onClick={() => handleSort('ATTENDANCE')}
-                    className="inline-flex items-center gap-1 hover:text-ink-primary ml-auto"
+                    className="inline-flex items-center gap-1 hover:text-carbon ml-auto"
                   >
                     Attendance
                     <ArrowUpDown className="w-3 h-3" />
                   </button>
                 </th>
-                <th className="py-2.5 px-3 text-right">
+                <th className="py-3 px-3 text-right">
                   <button
                     type="button"
                     onClick={() => handleSort('TREND')}
-                    className="inline-flex items-center gap-1 hover:text-ink-primary ml-auto"
+                    className="inline-flex items-center gap-1 hover:text-carbon ml-auto"
                   >
-                    Trend
+                    Velocity
                     <ArrowUpDown className="w-3 h-3" />
                   </button>
                 </th>
-                <th className="py-2.5 px-4">Primary Factor</th>
-                <th className="py-2.5 px-3">Follow-Up</th>
-                <th className="py-2.5 px-4 text-right">Action</th>
+                <th className="py-3 px-4">Primary Factor</th>
+                <th className="py-3 px-3">Follow-Up</th>
+                <th className="py-3 px-4 text-right">Dossier</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-stone-border text-xs">
               {filteredAndSorted.map((item) => {
                 const latestIntervention = item.interventions[0];
                 const primaryEvidence = item.evidence[0];
+                const isScoreLow =
+                  item.overallScorePercentage !== null &&
+                  item.overallScorePercentage < thresholds.passingScorePct;
+                const isAttLow =
+                  item.overallAttendancePercentage !== null &&
+                  item.overallAttendancePercentage < thresholds.criticalAttendancePct;
+
                 return (
                   <tr
                     key={item.student.id}
                     onClick={() => onSelectStudent(item.student.id)}
-                    className="hover:bg-subtle/50 cursor-pointer transition-colors group"
+                    className="hover:bg-bluebell-subtle/50 cursor-pointer transition-colors group"
                   >
-                    <td className="py-3 px-4 font-mono text-xs text-ink-muted whitespace-nowrap">
+                    <td className="py-3.5 px-4 font-mono text-xs text-ink-muted whitespace-nowrap">
                       {item.student.rollNumber}
                     </td>
 
-                    <td className="py-3 px-4 whitespace-nowrap">
-                      <div className="font-semibold text-ink-primary group-hover:text-imperial transition-colors">
+                    <td className="py-3.5 px-4 whitespace-nowrap">
+                      <div className="font-semibold text-carbon group-hover:text-imperial transition-colors">
                         {item.student.fullName}
                       </div>
                       <div className="text-[11px] text-ink-muted">
@@ -301,7 +321,7 @@ export const StudentDirectory: React.FC<StudentDirectoryProps> = ({
                       </div>
                     </td>
 
-                    <td className="py-3 px-3 whitespace-nowrap">
+                    <td className="py-3.5 px-3 whitespace-nowrap">
                       <RiskBadge
                         level={item.riskLevel}
                         size="sm"
@@ -309,30 +329,40 @@ export const StudentDirectory: React.FC<StudentDirectoryProps> = ({
                       />
                     </td>
 
-                    <td className="py-3 px-3 text-right font-mono tabular-nums whitespace-nowrap">
+                    <td className="py-3.5 px-3 text-right font-mono tabular-nums whitespace-nowrap">
                       {item.overallScorePercentage !== null ? (
-                        <span
-                          className={`font-semibold ${
-                            item.overallScorePercentage < thresholds.passingScorePct
-                              ? 'text-status-danger-text'
-                              : 'text-ink-primary'
-                          }`}
-                        >
-                          {item.overallScorePercentage}%
-                        </span>
+                        <div className="inline-flex flex-col items-end gap-1">
+                          <span
+                            className={`font-semibold ${
+                              isScoreLow ? 'text-magenta' : 'text-carbon'
+                            }`}
+                          >
+                            {item.overallScorePercentage}%
+                          </span>
+                          <div className="w-14 h-1 bg-subtle rounded-full overflow-hidden">
+                            <div
+                              className={`h-full rounded-full ${
+                                isScoreLow ? 'bg-magenta' : 'bg-bluebell'
+                              }`}
+                              style={{
+                                width: `${Math.min(
+                                  100,
+                                  Math.max(0, item.overallScorePercentage)
+                                )}%`,
+                              }}
+                            />
+                          </div>
+                        </div>
                       ) : (
                         <span className="text-ink-muted">N/A</span>
                       )}
                     </td>
 
-                    <td className="py-3 px-3 text-right font-mono tabular-nums whitespace-nowrap">
+                    <td className="py-3.5 px-3 text-right font-mono tabular-nums whitespace-nowrap">
                       {item.overallAttendancePercentage !== null ? (
                         <span
                           className={`font-semibold ${
-                            item.overallAttendancePercentage <
-                            thresholds.criticalAttendancePct
-                              ? 'text-status-danger-text'
-                              : 'text-ink-primary'
+                            isAttLow ? 'text-magenta' : 'text-carbon'
                           }`}
                         >
                           {item.overallAttendancePercentage}%
@@ -342,14 +372,14 @@ export const StudentDirectory: React.FC<StudentDirectoryProps> = ({
                       )}
                     </td>
 
-                    <td className="py-3 px-3 text-right whitespace-nowrap">
+                    <td className="py-3.5 px-3 text-right whitespace-nowrap">
                       <TrendDeltaPill delta={item.overallTrendDeltaPoints} />
                     </td>
 
-                    <td className="py-3 px-4 max-w-xs">
+                    <td className="py-3.5 px-4 max-w-xs">
                       {primaryEvidence ? (
                         <div className="truncate text-ink-secondary">
-                          <span className="font-medium text-ink-primary">
+                          <span className="font-medium text-carbon">
                             {primaryEvidence.headline}
                           </span>
                           <span className="font-mono text-ink-muted ml-1">
@@ -361,29 +391,29 @@ export const StudentDirectory: React.FC<StudentDirectoryProps> = ({
                       )}
                     </td>
 
-                    <td className="py-3 px-3 whitespace-nowrap">
+                    <td className="py-3.5 px-3 whitespace-nowrap">
                       {latestIntervention ? (
                         <InterventionStatusBadge status={latestIntervention.status} />
                       ) : item.riskLevel === 'HIGH' || item.riskLevel === 'MEDIUM' ? (
                         <span className="text-[11px] font-medium text-status-warning-text">
-                          Pending
+                          Unassigned
                         </span>
                       ) : (
                         <span className="text-[11px] text-ink-muted">—</span>
                       )}
                     </td>
 
-                    <td className="py-3 px-4 text-right whitespace-nowrap">
+                    <td className="py-3.5 px-4 text-right whitespace-nowrap">
                       <button
                         type="button"
                         onClick={(e) => {
                           e.stopPropagation();
                           onSelectStudent(item.student.id);
                         }}
-                        className="inline-flex items-center gap-1 text-xs font-medium text-bluebell hover:text-imperial transition-colors"
+                        className="inline-flex items-center gap-1 text-xs font-semibold text-bluebell group-hover:text-imperial transition-colors"
                       >
-                        <span>View</span>
-                        <ArrowUpRight className="w-3.5 h-3.5" />
+                        <span>Inspect</span>
+                        <ArrowUpRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                       </button>
                     </td>
                   </tr>
@@ -392,7 +422,7 @@ export const StudentDirectory: React.FC<StudentDirectoryProps> = ({
 
               {filteredAndSorted.length === 0 && (
                 <tr>
-                  <td colSpan={9} className="py-8 text-center text-xs text-ink-muted">
+                  <td colSpan={9} className="py-10 text-center text-xs text-ink-muted">
                     No student records match the selected filters.
                   </td>
                 </tr>

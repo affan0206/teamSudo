@@ -169,13 +169,14 @@ export const RecordsAndCsvView: React.FC<RecordsAndCsvViewProps> = ({
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-stone-border pb-5">
         <div>
-          <div className="text-[11px] font-semibold uppercase tracking-wider text-bluebell mb-1">
-            Academic Data Ingestion
+          <div className="section-kicker mb-1.5">
+            <span className="section-kicker-num">01 //</span>
+            <span>Academic Data Ingestion</span>
           </div>
-          <h1 className="text-2xl font-semibold text-ink-primary tracking-tight">
+          <h1 className="font-display text-2xl font-bold text-ink-primary tracking-tight">
             Records &amp; Batch CSV Import
           </h1>
-          <p className="text-sm text-ink-secondary mt-1">
+          <p className="text-xs text-ink-secondary mt-1">
             Record individual student marks and attendance or validate batch CSV uploads with strict range and null-safety checks.
           </p>
         </div>
@@ -208,7 +209,11 @@ export const RecordsAndCsvView: React.FC<RecordsAndCsvViewProps> = ({
         {/* Left Column (5 cols): Single Student & Subject Record Editor */}
         <section className="lg:col-span-5 card-surface overflow-hidden">
           <div className="px-5 py-4 border-b border-stone-border">
-            <h2 className="text-base font-semibold text-ink-primary">
+            <div className="section-kicker mb-0.5">
+              <span className="section-kicker-num">02 //</span>
+              <span>Single Record Editor</span>
+            </div>
+            <h2 className="font-display text-base font-bold text-ink-primary">
               Interactive Marks &amp; Attendance Editor
             </h2>
             <p className="text-xs text-ink-secondary mt-0.5">
@@ -416,7 +421,11 @@ export const RecordsAndCsvView: React.FC<RecordsAndCsvViewProps> = ({
         <section className="lg:col-span-7 card-surface overflow-hidden">
           <div className="px-5 py-4 border-b border-stone-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
-              <h2 className="text-base font-semibold text-ink-primary flex items-center gap-2">
+              <div className="section-kicker mb-0.5">
+                <span className="section-kicker-num">03 //</span>
+                <span>Batch Validation Engine</span>
+              </div>
+              <h2 className="font-display text-base font-bold text-ink-primary flex items-center gap-2">
                 <FileSpreadsheet className="w-4 h-4 text-imperial" />
                 Batch CSV Import &amp; Validation Engine
               </h2>

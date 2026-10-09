@@ -42,8 +42,13 @@
   body {
     background-color: var(--color-background);
     color: var(--color-text);
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11", "ss01";
     line-height: 1.5;
+  }
+
+  h1, h2, h3 {
+    font-family: "Plus Jakarta Sans", Inter, -apple-system, BlinkMacSystemFont, sans-serif;
+    letter-spacing: -0.025em;
   }
 
   /* Enforce tabular numerals on all academic metrics, tables, and scores */
@@ -58,32 +63,85 @@
   }
 }
 
+@keyframes viewEnter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @layer utilities {
   .shadow-card {
-    box-shadow: 0 1px 2px 0 rgba(10, 36, 99, 0.04);
+    box-shadow: 0 1px 3px 0 rgba(10, 36, 99, 0.04), 0 1px 2px -1px rgba(30, 27, 24, 0.03);
   }
 
   .shadow-elevated {
-    box-shadow: 0 8px 24px -4px rgba(10, 36, 99, 0.10), 0 2px 6px -1px rgba(30, 27, 24, 0.05);
+    box-shadow: 0 14px 34px -6px rgba(10, 36, 99, 0.14), 0 4px 10px -2px rgba(30, 27, 24, 0.06);
+  }
+
+  .shadow-monolith {
+    box-shadow: 0 20px 44px -10px rgba(10, 36, 99, 0.28), 0 4px 12px -2px rgba(10, 36, 99, 0.12);
+  }
+
+  .animate-view-enter {
+    animation: viewEnter 240ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  /* Subtle Swiss architectural grid pattern for hero & monolith surfaces */
+  .swiss-grid-pattern {
+    background-image:
+      linear-gradient(to right, rgba(10, 36, 99, 0.045) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(10, 36, 99, 0.045) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+
+  .swiss-grid-pattern-dark {
+    background-image:
+      linear-gradient(to right, rgba(255, 250, 255, 0.06) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 250, 255, 0.06) 1px, transparent 1px);
+    background-size: 36px 36px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-view-enter,
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
 
 @layer components {
+  /* Editorial Section Kicker (e.g., "01 // COHORT TELEMETRY") */
+  .section-kicker {
+    @apply inline-flex items-center gap-2 font-mono text-[11px] font-medium tracking-[0.08em] uppercase;
+    color: var(--color-secondary);
+  }
+
   /* Primary button: Imperial Blue (#0A2463) with Ghost White (#FFFAFF) text */
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 px-3.5 py-2 text-xs font-medium rounded-md transition-colors disabled:opacity-45 disabled:pointer-events-none;
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 text-xs font-semibold rounded-md transition-all duration-150 active:scale-[0.99] disabled:opacity-45 disabled:pointer-events-none;
     background-color: var(--color-primary);
     color: var(--color-background);
-    box-shadow: 0 1px 2px 0 rgba(10, 36, 99, 0.06);
+    box-shadow: 0 1px 2px 0 rgba(10, 36, 99, 0.12);
   }
 
   .btn-primary:hover {
     background-color: var(--color-primary-hover);
+    box-shadow: 0 4px 12px -2px rgba(10, 36, 99, 0.22);
   }
 
-  /* Secondary button: White surface with subtle border and Blue Bell hover accent */
+  /* Secondary button: White surface with crisp border and Blue Bell hover accent */
   .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 px-3.5 py-2 text-xs font-medium rounded-md transition-colors disabled:opacity-45 disabled:pointer-events-none;
+    @apply inline-flex items-center justify-center gap-2 px-3.5 py-2 text-xs font-medium rounded-md transition-all duration-150 active:scale-[0.99] disabled:opacity-45 disabled:pointer-events-none;
     background-color: var(--color-surface);
     color: var(--color-primary);
     border: 1px solid var(--color-border);
@@ -98,7 +156,7 @@
 
   /* Tertiary button */
   .btn-tertiary {
-    @apply inline-flex items-center justify-center gap-1.5 px-2.5 py-1.5 text-xs font-medium rounded-md transition-colors;
+    @apply inline-flex items-center justify-center gap-1.5 px-2.5 py-1.5 text-xs font-medium rounded-md transition-colors duration-150;
     color: var(--color-text-secondary);
   }
 
@@ -109,7 +167,7 @@
 
   /* Form input field with Blue Bell focus border */
   .input-field {
-    @apply w-full px-3 py-2 text-xs rounded-md transition-colors;
+    @apply w-full px-3 py-2 text-xs rounded-md transition-all duration-150;
     color: var(--color-text);
     background-color: var(--color-surface);
     border: 1px solid var(--color-border);
@@ -122,7 +180,7 @@
   .input-field:focus {
     outline: none;
     border-color: var(--color-secondary);
-    box-shadow: 0 0 0 2px rgba(62, 146, 204, 0.18);
+    box-shadow: 0 0 0 3px rgba(62, 146, 204, 0.16);
   }
 
   /* Surface card */
@@ -130,7 +188,16 @@
     background-color: var(--color-surface);
     border: 1px solid var(--color-border);
     border-radius: 0.5rem;
-    box-shadow: 0 1px 2px 0 rgba(10, 36, 99, 0.04);
+    box-shadow: 0 1px 3px 0 rgba(10, 36, 99, 0.04), 0 1px 2px -1px rgba(30, 27, 24, 0.03);
+  }
+
+  /* Imperial Blue Monolith Surface for high-contrast anchor sections */
+  .monolith-surface {
+    background-color: var(--color-primary);
+    color: var(--color-background);
+    border: 1px solid rgba(62, 146, 204, 0.28);
+    border-radius: 0.5rem;
+    box-shadow: 0 20px 44px -10px rgba(10, 36, 99, 0.25), 0 4px 12px -2px rgba(10, 36, 99, 0.12);
   }
 }
 
