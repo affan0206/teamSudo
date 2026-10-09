@@ -461,7 +461,6 @@ export function App() {
 
   const facultyNavItems: {
     id: FacultyTab;
-    index: string;
     label: string;
     Icon: React.FC<{ className?: string }>;
     badge?: string;
@@ -469,37 +468,30 @@ export function App() {
   }[] = [
     {
       id: 'OVERVIEW',
-      index: '01',
-      label: 'Cohort Overview',
+      label: 'Overview',
       Icon: LayoutDashboard,
-      badge: highRiskTotal > 0 ? `${highRiskTotal} High` : undefined,
+      badge: highRiskTotal > 0 ? `${highRiskTotal}` : undefined,
       badgeTone: 'danger',
     },
     {
       id: 'DIRECTORY',
-      index: '02',
-      label: 'Student Directory',
+      label: 'Students',
       Icon: Users,
       badge: `${evaluations.length}`,
       badgeTone: 'neutral',
     },
     {
       id: 'PROFILE',
-      index: '03',
-      label: 'Student Dossier',
+      label: 'Student Profile',
       Icon: UserCheck,
-      badge: selectedEvaluation?.student.rollNumber.replace('CS24-', '#'),
-      badgeTone: 'info',
     },
     {
       id: 'RECORDS',
-      index: '04',
-      label: 'Records & CSV',
+      label: 'Records',
       Icon: FileSpreadsheet,
     },
     {
       id: 'INTERVENTIONS',
-      index: '05',
       label: 'Interventions',
       Icon: ClipboardCheck,
       badge: activeInterventionsCount > 0 ? `${activeInterventionsCount}` : undefined,
@@ -507,29 +499,21 @@ export function App() {
     },
   ];
 
-  const activeRouteLabel =
-    currentUser.role === 'STUDENT'
-      ? '01 // PERSONAL ACADEMIC STANDING'
-      : (() => {
-          const match = facultyNavItems.find((i) => i.id === activeTab);
-          return match ? `${match.index} // ${match.label.toUpperCase()}` : '01 // COHORT OVERVIEW';
-        })();
-
   const renderSidebarContent = () => (
     <div className="flex flex-col justify-between h-full bg-imperial text-ghost select-none">
       <div className="space-y-6">
         {/* Brand Masthead */}
         <div className="px-5 pt-6 pb-5 border-b border-white/12 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-md bg-ghost text-imperial flex items-center justify-center shrink-0 shadow-card">
+            <div className="w-8 h-8 rounded-lg bg-ghost text-imperial flex items-center justify-center shrink-0 shadow-card">
               <BookOpenCheck className="w-4 h-4" />
             </div>
             <div>
               <div className="font-display text-sm font-bold tracking-tight text-ghost leading-none">
                 Academic Insight
               </div>
-              <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-bluebell-border mt-1">
-                {currentUser.role === 'FACULTY' ? 'Faculty Intelligence' : 'Student Standing'}
+              <div className="text-[11px] text-bluebell-border mt-1">
+                {currentUser.role === 'FACULTY' ? 'Faculty Portal' : 'Student Portal'}
               </div>
             </div>
           </div>
@@ -544,21 +528,18 @@ export function App() {
           </button>
         </div>
 
-        {/* Navigation Links (Role-Enforced) */}
+        {/* Primary Navigation Links */}
         {currentUser.role === 'FACULTY' ? (
-          <div className="px-3 space-y-2">
-            <div className="px-2.5 font-mono text-[10px] uppercase tracking-[0.14em] text-bluebell-border/75">
-              Navigation
-            </div>
+          <div className="px-3">
             <nav aria-label="Faculty Navigation" className="space-y-1">
-              {facultyNavItems.map(({ id, index, label, Icon, badge, badgeTone }) => {
+              {facultyNavItems.map(({ id, label, Icon, badge, badgeTone }) => {
                 const isActive = activeTab === id;
                 return (
                   <button
                     key={id}
                     type="button"
                     onClick={() => handleSelectNavTab(id)}
-                    className={`group relative w-full flex items-center justify-between px-3 py-2.5 text-xs rounded-md transition-all duration-150 ${
+                    className={`group relative w-full flex items-center justify-between px-3.5 py-2.5 text-sm rounded-lg transition-all duration-150 ${
                       isActive
                         ? 'bg-white/14 text-ghost font-semibold shadow-card'
                         : 'text-bluebell-border/85 hover:text-ghost hover:bg-white/8'
@@ -567,33 +548,26 @@ export function App() {
                     {isActive && (
                       <span
                         aria-hidden="true"
-                        className="absolute left-0 top-1.5 bottom-1.5 w-1 rounded-r bg-bluebell"
+                        className="absolute left-0 top-2 bottom-2 w-1 rounded-r bg-bluebell"
                       />
                     )}
-                    <span className="flex items-center gap-2.5 truncate">
-                      <span
-                        className={`font-mono text-[10px] tabular-nums ${
-                          isActive ? 'text-bluebell-border' : 'text-bluebell-border/60'
-                        }`}
-                      >
-                        {index}
-                      </span>
+                    <span className="flex items-center gap-3 truncate">
                       <Icon
-                        className={`w-3.5 h-3.5 shrink-0 transition-colors ${
+                        className={`w-4 h-4 shrink-0 transition-colors ${
                           isActive
                             ? 'text-bluebell'
-                            : 'text-bluebell-border/70 group-hover:text-ghost'
+                            : 'text-bluebell-border/75 group-hover:text-ghost'
                         }`}
                       />
                       <span className="truncate">{label}</span>
                     </span>
                     {badge && (
                       <span
-                        className={`ml-2 text-[10px] font-mono tabular-nums px-1.5 py-0.5 rounded ${
+                        className={`ml-2 text-xs font-mono tabular-nums px-2 py-0.5 rounded-md ${
                           badgeTone === 'danger'
                             ? 'bg-magenta text-ghost font-semibold'
                             : isActive
-                            ? 'bg-bluebell/30 text-ghost border border-bluebell/50'
+                            ? 'bg-bluebell/30 text-ghost'
                             : 'bg-white/10 text-bluebell-border'
                         }`}
                       >
@@ -606,20 +580,16 @@ export function App() {
             </nav>
           </div>
         ) : (
-          <div className="px-3 space-y-2">
-            <div className="px-2.5 font-mono text-[10px] uppercase tracking-[0.14em] text-bluebell-border/75">
-              Portal View
-            </div>
+          <div className="px-3">
             <nav aria-label="Student Navigation" className="space-y-1">
-              <div className="relative w-full flex items-center justify-between px-3 py-2.5 text-xs font-semibold rounded-md bg-white/14 text-ghost shadow-card">
+              <div className="relative w-full flex items-center justify-between px-3.5 py-2.5 text-sm font-semibold rounded-lg bg-white/14 text-ghost shadow-card">
                 <span
                   aria-hidden="true"
-                  className="absolute left-0 top-1.5 bottom-1.5 w-1 rounded-r bg-bluebell"
+                  className="absolute left-0 top-2 bottom-2 w-1 rounded-r bg-bluebell"
                 />
-                <span className="flex items-center gap-2.5">
-                  <span className="font-mono text-[10px] text-bluebell-border">01</span>
+                <span className="flex items-center gap-3">
                   <GraduationCap className="w-4 h-4 shrink-0 text-bluebell" />
-                  <span>My Academic Standing</span>
+                  <span>Overview</span>
                 </span>
               </div>
             </nav>
@@ -627,58 +597,53 @@ export function App() {
         )}
       </div>
 
-      {/* Bottom Calibration & Identity Block */}
-      <div className="p-4 border-t border-white/12 space-y-3.5 bg-imperial-hover/50">
+      {/* Secondary Settings & Identity Footer */}
+      <div className="p-4 border-t border-white/12 space-y-4 bg-imperial-hover/40">
         {currentUser.role === 'FACULTY' && (
-          <div className="space-y-1.5 pb-3 border-b border-white/12">
-            <div className="px-1 font-mono text-[10px] uppercase tracking-[0.14em] text-bluebell-border/70">
-              System Calibration
-            </div>
-            <div className="grid grid-cols-2 gap-1.5">
-              <button
-                type="button"
-                onClick={() => {
-                  setIsThresholdsModalOpen(true);
-                  setMobileMenuOpen(false);
-                }}
-                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded text-[11px] font-medium text-bluebell-border hover:text-ghost hover:bg-white/10 border border-white/10 transition-colors"
-              >
-                <SlidersHorizontal className="w-3 h-3 text-bluebell shrink-0" />
-                <span className="truncate">Risk Rules</span>
-              </button>
+          <div className="grid grid-cols-2 gap-2 pb-3.5 border-b border-white/12">
+            <button
+              type="button"
+              onClick={() => {
+                setIsThresholdsModalOpen(true);
+                setMobileMenuOpen(false);
+              }}
+              className="flex items-center justify-center gap-1.5 px-2.5 py-2 rounded-lg text-xs font-medium text-bluebell-border hover:text-ghost hover:bg-white/10 border border-white/10 transition-colors"
+            >
+              <SlidersHorizontal className="w-3.5 h-3.5 text-bluebell shrink-0" />
+              <span className="truncate">Risk rules</span>
+            </button>
 
-              <button
-                type="button"
-                onClick={handleResetDemoData}
-                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded text-[11px] font-medium text-bluebell-border hover:text-ghost hover:bg-white/10 border border-white/10 transition-colors"
-                title="Restore cohort records to default baseline"
-              >
-                <RotateCcw className="w-3 h-3 text-bluebell shrink-0" />
-                <span className="truncate">Reset Data</span>
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={handleResetDemoData}
+              className="flex items-center justify-center gap-1.5 px-2.5 py-2 rounded-lg text-xs font-medium text-bluebell-border hover:text-ghost hover:bg-white/10 border border-white/10 transition-colors"
+              title="Restore cohort records to default baseline"
+            >
+              <RotateCcw className="w-3.5 h-3.5 text-bluebell shrink-0" />
+              <span className="truncate">Reset data</span>
+            </button>
           </div>
         )}
 
-        <div className="space-y-2.5">
-          <div className="flex items-start justify-between gap-2">
+        <div className="space-y-3">
+          <div className="flex items-center justify-between gap-2">
             <div className="min-w-0">
-              <div className="text-xs font-semibold text-ghost truncate">
+              <div className="text-sm font-semibold text-ghost truncate">
                 {currentUser.fullName}
               </div>
-              <div className="text-[11px] text-bluebell-border/80 truncate font-mono">
+              <div className="text-xs text-bluebell-border/80 truncate">
                 {currentUser.email}
               </div>
             </div>
-            <span className="text-[10px] font-mono font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded bg-bluebell/25 border border-bluebell/40 text-ghost shrink-0">
-              {currentUser.role}
+            <span className="text-[11px] font-medium px-2 py-0.5 rounded bg-bluebell/25 border border-bluebell/40 text-ghost shrink-0">
+              {currentUser.role === 'FACULTY' ? 'Faculty' : 'Student'}
             </span>
           </div>
 
           <button
             type="button"
             onClick={handleLogout}
-            className="w-full inline-flex items-center justify-center gap-2 px-3 py-1.5 text-xs font-medium rounded-md bg-white/10 hover:bg-white/18 text-ghost border border-white/15 transition-colors"
+            className="w-full inline-flex items-center justify-center gap-2 px-3 py-2 text-xs font-medium rounded-lg bg-white/10 hover:bg-white/18 text-ghost border border-white/15 transition-colors"
           >
             <LogOut className="w-3.5 h-3.5 text-bluebell-border" />
             <span>Sign out</span>
@@ -690,18 +655,18 @@ export function App() {
 
   return (
     <div className="min-h-screen flex flex-col lg:flex-row bg-ghost text-carbon">
-      {/* Desktop Left Architectural Sidebar */}
+      {/* Desktop Left Sidebar */}
       <aside className="hidden lg:block w-60 shrink-0 sticky top-0 h-screen shadow-monolith z-20">
         {renderSidebarContent()}
       </aside>
 
       {/* Mobile & Tablet Top Header */}
-      <header className="lg:hidden sticky top-0 z-30 bg-imperial text-ghost border-b border-white/12 px-4 py-3 flex items-center justify-between shadow-card">
+      <header className="lg:hidden sticky top-0 z-30 bg-imperial text-ghost border-b border-white/12 px-4 py-3.5 flex items-center justify-between shadow-card">
         <div className="flex items-center gap-2.5">
           <button
             type="button"
             onClick={() => setMobileMenuOpen(true)}
-            className="p-1.5 -ml-1 text-bluebell-border hover:text-ghost rounded-md border border-white/15 bg-white/10"
+            className="p-1.5 -ml-1 text-bluebell-border hover:text-ghost rounded-lg border border-white/15 bg-white/10"
             aria-label="Open navigation menu"
           >
             <Menu className="w-4 h-4" />
@@ -719,7 +684,7 @@ export function App() {
         <button
           type="button"
           onClick={handleLogout}
-          className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded border border-white/15 bg-white/10 text-ghost hover:bg-white/20"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-white/15 bg-white/10 text-ghost hover:bg-white/20"
         >
           <LogOut className="w-3.5 h-3.5 text-bluebell-border" />
           <span>Sign out</span>
@@ -743,41 +708,16 @@ export function App() {
       {toastMessage && (
         <div
           role="status"
-          className="fixed bottom-5 right-5 z-50 bg-imperial text-ghost px-4 py-2.5 rounded-md shadow-elevated border border-bluebell/40 text-xs font-medium flex items-center gap-2.5 animate-view-enter"
+          className="fixed bottom-5 right-5 z-50 bg-imperial text-ghost px-4 py-3 rounded-lg shadow-elevated border border-bluebell/40 text-sm font-medium flex items-center gap-2.5 animate-view-enter"
         >
           <span className="w-2 h-2 rounded-full bg-bluebell shrink-0" />
           <span>{toastMessage}</span>
         </div>
       )}
 
-      {/* Main Content Area */}
+      {/* Main Content Area (32-40px padding on desktop) */}
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Subtle Swiss Top Telemetry Bar */}
-        <div className="border-b border-stone-border bg-surface/80 backdrop-blur-sm px-4 sm:px-6 lg:px-10 py-2.5 flex flex-wrap items-center justify-between gap-2 text-[11px]">
-          <div className="flex items-center gap-2 font-mono text-ink-secondary">
-            <span className="w-1.5 h-1.5 rounded-full bg-bluebell" />
-            <span className="uppercase tracking-wider font-medium text-imperial">
-              {activeRouteLabel}
-            </span>
-            <span className="text-stone-strong hidden sm:inline">·</span>
-            <span className="hidden sm:inline text-ink-muted">
-              B.Tech CS — Sem {dataset.students[0]?.semester ?? 5} ({dataset.students.length} Students · {dataset.subjects.length} Subjects)
-            </span>
-          </div>
-
-          <div className="flex items-center gap-3 font-mono text-ink-muted tabular-nums">
-            <span>
-              Pass Floor: <strong className="text-carbon">{thresholds.passingScorePct}%</strong>
-            </span>
-            <span className="text-stone-strong">·</span>
-            <span>
-              Min Attendance:{' '}
-              <strong className="text-carbon">{thresholds.criticalAttendancePct}%</strong>
-            </span>
-          </div>
-        </div>
-
-        <main className="flex-1 max-w-[1260px] w-full mx-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8">
+        <main className="flex-1 max-w-[1260px] w-full mx-auto px-5 sm:px-8 lg:px-10 py-8 lg:py-10">
           <div key={currentUser.role === 'STUDENT' ? 'STUDENT' : activeTab} className="animate-view-enter">
             {currentUser.role === 'STUDENT' ? (
               selectedEvaluation ? (

@@ -23,6 +23,7 @@ import {
   AcademicDataset,
   ActionRecommendation,
   InterventionStatus,
+  RiskEvidenceItem,
   RiskThresholds,
   StudentAcademicEvaluation,
   SubjectPerformanceSummary,
@@ -65,6 +66,81 @@ interface StudentProfileViewProps {
 
 const SUBJECT_LINE_COLORS = ['#0A2463', '#3E92CC', '#D8315B', '#57534E', '#1E1B18'];
 
+function formatConciseAlert(
+  ev: RiskEvidenceItem,
+  evaluation: StudentAcademicEvaluation,
+  thresholds: RiskThresholds
+): { title: string; subtitle: string } {
+  const prefix = ev.subjectCode ? `${ev.subjectCode} · ` : '';
+
+  switch (ev.category) {
+    case 'ATTENDANCE_CRITICAL':
+    case 'ATTENDANCE_WARNING': {
+      const subSummary = ev.subjectCode
+        ? evaluation.subjectSummaries.find((s) => s.subject.code === ev.subjectCode)
+        : null;
+      const pct =
+        subSummary?.attendancePercentage ?? evaluation.overallAttendancePercentage;
+      const target =
+        subSummary?.subject.minAttendancePercentage ?? thresholds.criticalAttendancePct;
+      return {
+        title: `${prefix}Low attendance`,
+        subtitle: `${pct !== null ? `${pct}% attendance` : ev.metricLabel} · Target ${target}%`,
+      };
+    }
+    case 'SCORE_FAILING': {
+      const subSummary = ev.subjectCode
+        ? evaluation.subjectSummaries.find((s) => s.subject.code === ev.subjectCode)
+        : null;
+      const pct =
+        subSummary?.weightedScorePercentage ?? evaluation.overallScorePercentage;
+      const target = subSummary?.subject.passPercentage ?? thresholds.passingScorePct;
+      return {
+        title: `${prefix}Score below passing`,
+        subtitle: `${pct !== null ? `${pct}% score` : ev.metricLabel} · Target ${target}%`,
+      };
+    }
+    case 'SCORE_BORDERLINE': {
+      const subSummary = ev.subjectCode
+        ? evaluation.subjectSummaries.find((s) => s.subject.code === ev.subjectCode)
+        : null;
+      const pct =
+        subSummary?.weightedScorePercentage ?? evaluation.overallScorePercentage;
+      const target = subSummary?.subject.passPercentage ?? thresholds.passingScorePct;
+      return {
+        title: `${prefix}Borderline score`,
+        subtitle: `${pct !== null ? `${pct}% score` : ev.metricLabel} · Target ${target}%`,
+      };
+    }
+    case 'TREND_SEVERE_DROP':
+    case 'TREND_MODERATE_DROP':
+      return {
+        title: `${prefix}Assessment score drop`,
+        subtitle: ev.metricLabel,
+      };
+    case 'RECENT_ASSESSMENT_FAILURE':
+      return {
+        title: `${prefix}Low recent exam score`,
+        subtitle: `${ev.metricLabel} · Target ${thresholds.passingScorePct}%`,
+      };
+    case 'MULTI_SUBJECT_STRUGGLE':
+      return {
+        title: 'Multiple subjects below passing',
+        subtitle: `${evaluation.failingSubjectsCount} subjects · Target ${thresholds.passingScorePct}%`,
+      };
+    case 'MISSING_DATA':
+      return {
+        title: `${prefix}Pending assessment`,
+        subtitle: ev.metricLabel,
+      };
+    default:
+      return {
+        title: ev.headline,
+        subtitle: ev.metricLabel,
+      };
+  }
+}
+
 export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
   evaluation,
   allEvaluations,
@@ -84,6 +160,7 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
     {}
   );
   const [expandedRecIds, setExpandedRecIds] = useState<Record<string, boolean>>({});
+  const [showAllRecommendations, setShowAllRecommendations] = useState(false);
 
   // Inline subject editor state
   const [editingSubjectId, setEditingSubjectId] = useState<string | null>(null);
@@ -210,29 +287,33 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
     return row;
   });
 
+  const visibleRecommendations = showAllRecommendations
+    ? evaluation.recommendations
+    : evaluation.recommendations.slice(0, 3);
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 lg:space-y-10">
       {/* Top Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <button
           type="button"
           onClick={onBackToDirectory}
-          className="inline-flex items-center gap-1.5 text-xs font-medium text-ink-secondary hover:text-imperial transition-colors"
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-ink-secondary hover:text-imperial transition-colors"
         >
-          <ArrowLeft className="w-3.5 h-3.5" />
-          <span>Roster Directory</span>
+          <ArrowLeft className="w-4 h-4" />
+          <span>Back to students</span>
         </button>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5">
           <select
             value={student.id}
             onChange={(e) => onSelectStudent(e.target.value)}
             aria-label="Select student profile"
-            className="input-field w-auto py-1.5 text-xs font-medium"
+            className="input-field w-auto py-2 text-sm font-medium"
           >
             {allEvaluations.map((ev) => (
               <option key={ev.student.id} value={ev.student.id}>
-                {ev.student.rollNumber} — {ev.student.fullName} ({ev.riskLevel})
+                {ev.student.rollNumber} — {ev.student.fullName}
               </option>
             ))}
           </select>
@@ -244,120 +325,99 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
               setIntvTitle('');
               setIntvDescription('');
             }}
-            className="btn-primary text-xs py-1.5"
+            className="btn-primary"
           >
-            <Plus className="w-3.5 h-3.5" />
-            <span>Record Intervention</span>
+            <Plus className="w-4 h-4" />
+            <span>New intervention</span>
           </button>
         </div>
       </div>
 
-      {/* Swiss Editorial Dossier Masthead + 4-Cell Metric Matrix */}
-      <section className="card-surface overflow-hidden">
-        <div className="p-6 border-b border-stone-border flex flex-col sm:flex-row sm:items-end justify-between gap-4 bg-subtle/30">
-          <div>
-            <div className="section-kicker mb-2">
-              <span className="section-kicker-num">01 //</span>
-              <span>Student Academic Dossier</span>
-            </div>
-            <div className="flex items-center gap-3 flex-wrap">
-              <h1 className="font-display text-2xl font-bold tracking-tight text-ink-primary">
-                {student.fullName}
-              </h1>
-              <RiskBadge
-                level={evaluation.riskLevel}
-                size="md"
-                showIncompleteTag={evaluation.hasIncompleteData}
-              />
-            </div>
-            <p className="text-xs text-ink-secondary mt-1.5 font-mono">
-              {student.rollNumber} · Sem {student.semester} ({student.section}) · Advisor:{' '}
-              {student.advisorName}
-            </p>
+      {/* Student Identity Header */}
+      <header className="pb-6 border-b border-stone-border flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <div className="flex items-center gap-3 flex-wrap">
+            <h1 className="font-display text-2xl sm:text-[28px] lg:text-[30px] font-bold tracking-tight text-carbon">
+              {student.fullName}
+            </h1>
+            <RiskBadge
+              level={evaluation.riskLevel}
+              size="md"
+              showIncompleteTag={evaluation.hasIncompleteData}
+            />
           </div>
+          <p className="text-sm text-ink-secondary mt-1">
+            <span className="font-mono">{student.rollNumber}</span> · Sem {student.semester}{' '}
+            (Sec {student.section}) · Advisor: {student.advisorName}
+          </p>
+        </div>
+      </header>
 
-          <div className="flex items-center gap-2 font-mono text-[11px] text-ink-muted">
-            <span className="px-2.5 py-1 rounded bg-surface border border-stone-border">
-              Pass Floor: {thresholds.passingScorePct}%
-            </span>
-            <span className="px-2.5 py-1 rounded bg-surface border border-stone-border">
-              Min Attendance: {thresholds.warningAttendancePct}%
-            </span>
+      {/* 4 Aligned Academic Standing Metric Cards */}
+      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div
+          className={`card-surface p-6 flex flex-col justify-between border-t-2 ${
+            (evaluation.overallScorePercentage ?? 100) < thresholds.passingScorePct
+              ? 'border-t-magenta'
+              : 'border-t-imperial'
+          }`}
+        >
+          <div className="text-sm font-medium text-ink-secondary">Academic score</div>
+          <div
+            className={`font-display text-3xl font-bold tabular-nums my-3 ${
+              (evaluation.overallScorePercentage ?? 100) < thresholds.passingScorePct
+                ? 'text-magenta'
+                : 'text-carbon'
+            }`}
+          >
+            {evaluation.overallScorePercentage !== null
+              ? `${evaluation.overallScorePercentage}%`
+              : 'N/A'}
+          </div>
+          <div className="text-xs text-ink-secondary tabular-nums">
+            Target {thresholds.passingScorePct}%
           </div>
         </div>
 
-        {/* 4-Cell Hairline Standing Matrix */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 divide-y lg:divide-y-0 divide-x divide-stone-border">
-          <div className="p-5 flex flex-col justify-between">
-            <div className="section-kicker">
-              <span className="section-kicker-num">A //</span>
-              <span>Academic Score</span>
-            </div>
-            <div className="my-2">
-              <div
-                className={`font-display text-3xl font-bold tabular-nums tracking-tight ${
-                  (evaluation.overallScorePercentage ?? 100) < thresholds.passingScorePct
-                    ? 'text-magenta'
-                    : 'text-ink-primary'
-                }`}
-              >
-                {evaluation.overallScorePercentage !== null
-                  ? `${evaluation.overallScorePercentage}%`
-                  : 'N/A'}
-              </div>
-            </div>
-            <div className="text-[11px] text-ink-muted font-mono">
-              {evaluation.failingSubjectsCount} failing · Floor {thresholds.passingScorePct}%
-            </div>
+        <div
+          className={`card-surface p-6 flex flex-col justify-between border-t-2 ${
+            (evaluation.overallAttendancePercentage ?? 100) < thresholds.criticalAttendancePct
+              ? 'border-t-magenta'
+              : 'border-t-bluebell'
+          }`}
+        >
+          <div className="text-sm font-medium text-ink-secondary">Attendance</div>
+          <div
+            className={`font-display text-3xl font-bold tabular-nums my-3 ${
+              (evaluation.overallAttendancePercentage ?? 100) < thresholds.criticalAttendancePct
+                ? 'text-magenta'
+                : 'text-carbon'
+            }`}
+          >
+            {evaluation.overallAttendancePercentage !== null
+              ? `${evaluation.overallAttendancePercentage}%`
+              : 'N/A'}
           </div>
-
-          <div className="p-5 flex flex-col justify-between">
-            <div className="section-kicker">
-              <span className="section-kicker-num">B //</span>
-              <span>Attendance</span>
-            </div>
-            <div className="my-2">
-              <div
-                className={`font-display text-3xl font-bold tabular-nums tracking-tight ${
-                  (evaluation.overallAttendancePercentage ?? 100) < thresholds.criticalAttendancePct
-                    ? 'text-magenta'
-                    : 'text-ink-primary'
-                }`}
-              >
-                {evaluation.overallAttendancePercentage !== null
-                  ? `${evaluation.overallAttendancePercentage}%`
-                  : 'N/A'}
-              </div>
-            </div>
-            <div className="text-[11px] text-ink-muted font-mono tabular-nums">
-              {evaluation.totalClassesAttended}/{evaluation.totalClassesHeld} sessions
-            </div>
+          <div className="text-xs text-ink-secondary tabular-nums">
+            {evaluation.totalClassesAttended}/{evaluation.totalClassesHeld} classes
           </div>
+        </div>
 
-          <div className="p-5 flex flex-col justify-between">
-            <div className="section-kicker">
-              <span className="section-kicker-num">C //</span>
-              <span>Trajectory Delta</span>
-            </div>
-            <div className="my-2.5">
-              <TrendDeltaPill delta={evaluation.overallTrendDeltaPoints} />
-            </div>
-            <div className="text-[11px] text-ink-muted">Midterm → Assessment 2</div>
+        <div className="card-surface p-6 flex flex-col justify-between border-t-2 border-t-bluebell">
+          <div className="text-sm font-medium text-ink-secondary">Recent trend</div>
+          <div className="my-3">
+            <TrendDeltaPill delta={evaluation.overallTrendDeltaPoints} />
           </div>
+          <div className="text-xs text-ink-secondary">Midterm to Assessment 2</div>
+        </div>
 
-          <div className="p-5 flex flex-col justify-between">
-            <div className="section-kicker">
-              <span className="section-kicker-num">D //</span>
-              <span>Interventions</span>
-            </div>
-            <div className="my-2">
-              <div className="font-display text-3xl font-bold text-ink-primary tabular-nums tracking-tight">
-                {evaluation.interventions.length}
-              </div>
-            </div>
-            <div className="text-[11px] text-ink-muted font-mono">
-              {evaluation.activeInterventionsCount} active cases
-            </div>
+        <div className="card-surface p-6 flex flex-col justify-between border-t-2 border-t-imperial">
+          <div className="text-sm font-medium text-ink-secondary">Interventions</div>
+          <div className="font-display text-3xl font-bold text-carbon tabular-nums my-3">
+            {evaluation.interventions.length}
+          </div>
+          <div className="text-xs text-ink-secondary tabular-nums">
+            {evaluation.activeInterventionsCount} active
           </div>
         </div>
       </section>
@@ -365,7 +425,7 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
       {/* Feedback Banner */}
       {(editFeedback || intvSuccess) && (
         <div
-          className={`p-3 rounded-md border text-xs flex items-center justify-between ${
+          className={`p-4 rounded-lg border text-sm flex items-center justify-between ${
             editFeedback?.type === 'error'
               ? 'bg-status-danger-bg border-status-danger-border text-status-danger-text'
               : 'bg-status-success-bg border-status-success-border text-status-success-text'
@@ -385,31 +445,29 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
         </div>
       )}
 
-      {/* Concise Risk Factors & Recommended Actions (Expandable on demand) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-        {/* Risk Factors */}
-        <div className="lg:col-span-5 card-surface overflow-hidden">
-          <div className="px-5 py-3.5 border-b border-stone-border flex items-center justify-between">
-            <div>
-              <div className="section-kicker mb-0.5">
-                <span className="section-kicker-num">02 //</span>
-                <span>Diagnostic Signals</span>
-              </div>
-              <h2 className="font-display text-sm font-bold text-ink-primary">
-                Risk Indicators ({evaluation.evidence.length})
-              </h2>
-            </div>
+      {/* Academic Alerts & Recommendations (Collapsed details by default) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* Academic Alerts */}
+        <section className="lg:col-span-5 card-surface overflow-hidden">
+          <div className="px-6 py-4 border-b border-stone-border flex items-center justify-between">
+            <h2 className="font-display text-lg font-semibold text-carbon">
+              Academic alerts
+            </h2>
+            <span className="font-mono text-xs text-ink-muted tabular-nums">
+              {evaluation.evidence.length}
+            </span>
           </div>
 
-          <div className="divide-y divide-stone-border text-xs">
+          <div className="divide-y divide-stone-border text-sm">
             {evaluation.evidence.map((ev) => {
+              const summary = formatConciseAlert(ev, evaluation, thresholds);
               const isExpanded = Boolean(expandedEvidenceIds[ev.id]);
               return (
-                <div key={ev.id} className="px-5 py-3.5">
-                  <div className="flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-2 min-w-0">
+                <div key={ev.id} className="px-6 py-4">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-start gap-2.5 min-w-0">
                       <span
-                        className={`w-2 h-2 rounded-full shrink-0 ${
+                        className={`w-2 h-2 rounded-full shrink-0 mt-2 ${
                           ev.severity === 'HIGH'
                             ? 'bg-status-danger-dot'
                             : ev.severity === 'MEDIUM'
@@ -418,11 +476,11 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
                         }`}
                       />
                       <div className="min-w-0">
-                        <div className="font-semibold text-ink-primary truncate">
-                          {ev.headline}
+                        <div className="font-semibold text-carbon truncate">
+                          {summary.title}
                         </div>
-                        <div className="font-mono text-[11px] text-ink-muted tabular-nums">
-                          {ev.metricLabel}
+                        <div className="font-mono text-xs text-ink-secondary tabular-nums mt-0.5">
+                          {summary.subtitle}
                         </div>
                       </div>
                     </div>
@@ -435,19 +493,19 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
                           [ev.id]: !prev[ev.id],
                         }))
                       }
-                      className="text-xs font-medium text-bluebell hover:text-imperial shrink-0 inline-flex items-center gap-0.5 transition-colors"
+                      className="text-xs font-medium text-bluebell hover:text-imperial shrink-0 inline-flex items-center gap-1 transition-colors"
                     >
-                      <span>{isExpanded ? 'Hide' : 'Details'}</span>
+                      <span>{isExpanded ? 'Hide' : 'View details'}</span>
                       {isExpanded ? (
-                        <ChevronUp className="w-3.5 h-3.5" />
+                        <ChevronUp className="w-4 h-4" />
                       ) : (
-                        <ChevronDown className="w-3.5 h-3.5" />
+                        <ChevronDown className="w-4 h-4" />
                       )}
                     </button>
                   </div>
 
                   {isExpanded && (
-                    <p className="mt-2 pl-4 text-xs text-ink-secondary leading-relaxed">
+                    <p className="mt-3 ml-4 pl-3 border-l-2 border-bluebell-border text-sm text-ink-secondary leading-relaxed">
                       {ev.detail}
                     </p>
                   )}
@@ -455,42 +513,55 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
               );
             })}
           </div>
-        </div>
+        </section>
 
-        {/* Recommended Actions */}
-        <div className="lg:col-span-7 card-surface overflow-hidden">
-          <div className="px-5 py-3.5 border-b border-stone-border">
-            <div className="section-kicker mb-0.5">
-              <span className="section-kicker-num">03 //</span>
-              <span>Prescriptive Playbook</span>
-            </div>
-            <h2 className="font-display text-sm font-bold text-ink-primary">
-              Recommended Actions ({evaluation.recommendations.length})
+        {/* Recommendations (Top 3 shown first) */}
+        <section className="lg:col-span-7 card-surface overflow-hidden">
+          <div className="px-6 py-4 border-b border-stone-border flex items-center justify-between">
+            <h2 className="font-display text-lg font-semibold text-carbon">
+              Recommendations
             </h2>
+            {evaluation.recommendations.length > 3 && (
+              <button
+                type="button"
+                onClick={() => setShowAllRecommendations((prev) => !prev)}
+                className="text-xs font-medium text-bluebell hover:text-imperial transition-colors"
+              >
+                {showAllRecommendations
+                  ? 'Show top 3'
+                  : `View all (${evaluation.recommendations.length})`}
+              </button>
+            )}
           </div>
 
-          <div className="divide-y divide-stone-border text-xs">
-            {evaluation.recommendations.slice(0, 4).map((rec) => {
+          <div className="divide-y divide-stone-border text-sm">
+            {visibleRecommendations.map((rec) => {
               const isExpanded = Boolean(expandedRecIds[rec.id]);
               return (
-                <div key={rec.id} className="px-5 py-3.5">
+                <div key={rec.id} className="px-6 py-4">
                   <div className="flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-2 min-w-0">
-                      <span
-                        className={`text-[10px] font-semibold uppercase px-1.5 py-0.5 rounded border shrink-0 ${
-                          rec.priority === 'URGENT'
-                            ? 'bg-status-danger-bg text-status-danger-text border-status-danger-border'
-                            : 'bg-subtle text-ink-secondary border-stone-border'
-                        }`}
-                      >
-                        {rec.priority === 'URGENT' ? 'Priority' : 'Action'}
-                      </span>
-                      <span className="font-semibold text-ink-primary truncate">
-                        {rec.title}
-                      </span>
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span
+                          className={`text-[11px] font-semibold uppercase px-2 py-0.5 rounded border shrink-0 ${
+                            rec.priority === 'URGENT'
+                              ? 'bg-status-danger-bg text-status-danger-text border-status-danger-border'
+                              : 'bg-subtle text-ink-secondary border-stone-border'
+                          }`}
+                        >
+                          {rec.priority === 'URGENT' ? 'Priority' : 'Action'}
+                        </span>
+                        <span className="font-semibold text-carbon truncate">
+                          {rec.title}
+                        </span>
+                      </div>
+                      <div className="text-xs text-ink-secondary font-mono tabular-nums mt-1">
+                        {rec.subjectCode ? `${rec.subjectCode} · ` : ''}
+                        Follow-up within {rec.suggestedFollowUpDays} days
+                      </div>
                     </div>
 
-                    <div className="flex items-center gap-2 shrink-0">
+                    <div className="flex items-center gap-2.5 shrink-0">
                       <button
                         type="button"
                         onClick={() =>
@@ -499,31 +570,31 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
                             [rec.id]: !prev[rec.id],
                           }))
                         }
-                        className="text-xs font-medium text-ink-secondary hover:text-ink-primary inline-flex items-center gap-0.5"
+                        className="text-xs font-medium text-bluebell hover:text-imperial inline-flex items-center gap-0.5"
                       >
-                        <span>{isExpanded ? 'Hide' : 'Details'}</span>
+                        <span>{isExpanded ? 'Hide' : 'View details'}</span>
                         {isExpanded ? (
-                          <ChevronUp className="w-3.5 h-3.5" />
+                          <ChevronUp className="w-4 h-4" />
                         ) : (
-                          <ChevronDown className="w-3.5 h-3.5" />
+                          <ChevronDown className="w-4 h-4" />
                         )}
                       </button>
 
                       <button
                         type="button"
                         onClick={() => handlePrefillFromRecommendation(rec)}
-                        className="btn-secondary py-1 px-2 text-[11px]"
+                        className="btn-secondary py-1.5 px-2.5 text-xs"
                       >
-                        <Plus className="w-3 h-3" />
+                        <Plus className="w-3.5 h-3.5" />
                         <span>Assign</span>
                       </button>
                     </div>
                   </div>
 
                   {isExpanded && (
-                    <div className="mt-2 pl-2 border-l-2 border-bluebell-border space-y-1 text-ink-secondary">
+                    <div className="mt-3 pl-3 border-l-2 border-bluebell-border space-y-1.5 text-sm text-ink-secondary">
                       <div>
-                        <strong className="text-ink-primary">Faculty:</strong>{' '}
+                        <strong className="text-carbon">Faculty:</strong>{' '}
                         {rec.facultyAction}
                       </div>
                       <div>
@@ -536,41 +607,32 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
               );
             })}
           </div>
-        </div>
+        </section>
       </div>
 
-      {/* Subject-Wise Academic Performance & Attendance Table (Inline Editable) */}
-      <div className="card-surface overflow-hidden">
-        <div className="px-5 py-3.5 border-b border-stone-border flex items-center justify-between">
-          <div>
-            <div className="section-kicker mb-0.5">
-              <span className="section-kicker-num">04 //</span>
-              <span>Course Records &amp; Inline Editor</span>
-            </div>
-            <h2 className="font-display text-sm font-bold text-ink-primary">
-              Subject Performance &amp; Attendance
-            </h2>
-          </div>
-          <span className="text-[11px] font-mono text-ink-muted">
-            Select Edit to update marks or attendance
-          </span>
+      {/* Subject Performance Table (Inline Editable) */}
+      <section className="card-surface overflow-hidden">
+        <div className="px-6 py-4 border-b border-stone-border">
+          <h2 className="font-display text-lg font-semibold text-carbon">
+            Subject performance
+          </h2>
         </div>
 
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="border-b border-stone-border bg-subtle/60 text-[11px] font-semibold uppercase tracking-wider text-ink-muted">
-                <th className="py-2.5 px-4">Subject</th>
-                <th className="py-2.5 px-3 text-right">Attendance</th>
-                <th className="py-2.5 px-3 text-right">Quiz 1 (/20)</th>
-                <th className="py-2.5 px-3 text-right">Midterm (/50)</th>
-                <th className="py-2.5 px-3 text-right">Asmt 2 (/30)</th>
-                <th className="py-2.5 px-3 text-right">Score</th>
-                <th className="py-2.5 px-3 text-right">Trend</th>
-                <th className="py-2.5 px-4 text-right">Edit</th>
+              <tr className="border-b border-stone-border bg-subtle/60 text-xs font-semibold uppercase tracking-wider text-ink-muted">
+                <th className="py-3.5 px-6">Subject</th>
+                <th className="py-3.5 px-4 text-right">Attendance</th>
+                <th className="py-3.5 px-4 text-right">Quiz 1 (/20)</th>
+                <th className="py-3.5 px-4 text-right">Midterm (/50)</th>
+                <th className="py-3.5 px-4 text-right">Asmt 2 (/30)</th>
+                <th className="py-3.5 px-4 text-right">Score</th>
+                <th className="py-3.5 px-4 text-right">Trend</th>
+                <th className="py-3.5 px-6 text-right">Edit</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-stone-border text-xs">
+            <tbody className="divide-y divide-stone-border text-sm">
               {evaluation.subjectSummaries.map((sub) => {
                 const isEditing = editingSubjectId === sub.subject.id;
                 const q1 = sub.assessments[0];
@@ -582,16 +644,17 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
                     key={sub.subject.id}
                     className={isEditing ? 'bg-imperial-subtle' : 'hover:bg-subtle/40'}
                   >
-                    <td className="py-3 px-4">
-                      <div className="font-semibold text-ink-primary">
-                        {sub.subject.code} · {sub.subject.name}
+                    <td className="py-4 px-6">
+                      <div className="font-semibold text-carbon">
+                        <span className="font-mono text-imperial">{sub.subject.code}</span> ·{' '}
+                        {sub.subject.name}
                       </div>
-                      <div className="text-[11px] text-ink-muted">
+                      <div className="text-xs text-ink-muted mt-0.5">
                         {sub.subject.instructor}
                       </div>
                     </td>
 
-                    <td className="py-3 px-3 text-right tabular-nums">
+                    <td className="py-4 px-4 text-right tabular-nums">
                       {isEditing ? (
                         <div className="inline-flex items-center gap-1 justify-end">
                           <input
@@ -601,7 +664,7 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
                             onChange={(e) =>
                               setAttDraft({ ...attDraft, attended: e.target.value })
                             }
-                            className="w-12 px-1.5 py-1 text-xs border border-stone-border rounded bg-white text-right"
+                            className="w-14 px-2 py-1 text-sm border border-stone-border rounded bg-white text-right"
                           />
                           <span>/</span>
                           <input
@@ -611,7 +674,7 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
                             onChange={(e) =>
                               setAttDraft({ ...attDraft, held: e.target.value })
                             }
-                            className="w-12 px-1.5 py-1 text-xs border border-stone-border rounded bg-white text-right"
+                            className="w-14 px-2 py-1 text-sm border border-stone-border rounded bg-white text-right"
                           />
                         </div>
                       ) : (
@@ -622,14 +685,14 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
                                 ? 'text-status-danger-text'
                                 : sub.isWarningAttendance
                                 ? 'text-status-warning-text'
-                                : 'text-ink-primary'
+                                : 'text-carbon'
                             }`}
                           >
                             {sub.attendancePercentage !== null
                               ? `${sub.attendancePercentage}%`
                               : 'N/A'}
                           </span>
-                          <div className="text-[11px] text-ink-muted">
+                          <div className="text-xs text-ink-muted">
                             {sub.classesAttended}/{sub.classesHeld}
                           </div>
                         </div>
@@ -637,12 +700,12 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
                     </td>
 
                     {[q1, mid, a2].map((asmtItem) => {
-                      if (!asmtItem) return <td key="empty" className="py-3 px-3" />;
+                      if (!asmtItem) return <td key="empty" className="py-4 px-4" />;
                       const draftVal = scoreDrafts[asmtItem.assessment.id] ?? '';
                       return (
                         <td
                           key={asmtItem.assessment.id}
-                          className="py-3 px-3 text-right tabular-nums"
+                          className="py-4 px-4 text-right tabular-nums"
                         >
                           {isEditing ? (
                             <input
@@ -658,15 +721,15 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
                                   [asmtItem.assessment.id]: e.target.value,
                                 })
                               }
-                              className="w-16 px-1.5 py-1 text-xs border border-stone-border rounded bg-white text-right font-mono"
+                              className="w-16 px-2 py-1 text-sm border border-stone-border rounded bg-white text-right font-mono"
                             />
                           ) : asmtItem.marksObtained === null ? (
-                            <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-subtle text-ink-muted border border-stone-border">
-                              MISSING
+                            <span className="font-mono text-xs px-2 py-0.5 rounded bg-subtle text-ink-muted border border-stone-border">
+                              Missing
                             </span>
                           ) : (
                             <div className="font-mono">
-                              <span className="font-medium text-ink-primary">
+                              <span className="font-medium text-carbon">
                                 {asmtItem.marksObtained}
                               </span>
                               <span className="text-ink-muted">
@@ -678,7 +741,7 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
                       );
                     })}
 
-                    <td className="py-3 px-3 text-right font-mono tabular-nums">
+                    <td className="py-4 px-4 text-right font-mono tabular-nums">
                       {sub.weightedScorePercentage !== null ? (
                         <span
                           className={`font-semibold ${
@@ -686,7 +749,7 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
                               ? 'text-status-danger-text'
                               : sub.isBorderlineScore
                               ? 'text-status-warning-text'
-                              : 'text-ink-primary'
+                              : 'text-carbon'
                           }`}
                         >
                           {sub.weightedScorePercentage}%
@@ -696,28 +759,28 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
                       )}
                     </td>
 
-                    <td className="py-3 px-3 text-right">
+                    <td className="py-4 px-4 text-right">
                       <TrendDeltaPill delta={sub.trendDeltaPoints} />
                     </td>
 
-                    <td className="py-3 px-4 text-right">
+                    <td className="py-4 px-6 text-right">
                       {isEditing ? (
-                        <div className="inline-flex items-center gap-1">
+                        <div className="inline-flex items-center gap-1.5">
                           <button
                             type="button"
                             onClick={() => handleSaveSubjectEdits(sub)}
-                            className="p-1.5 rounded bg-imperial text-ghost hover:bg-imperial-hover"
+                            className="p-1.5 rounded-md bg-imperial text-ghost hover:bg-imperial-hover"
                             title="Save"
                           >
-                            <Check className="w-3.5 h-3.5" />
+                            <Check className="w-4 h-4" />
                           </button>
                           <button
                             type="button"
                             onClick={() => setEditingSubjectId(null)}
-                            className="p-1.5 rounded bg-surface border border-stone-border text-ink-secondary"
+                            className="p-1.5 rounded-md bg-surface border border-stone-border text-ink-secondary"
                             title="Cancel"
                           >
-                            <X className="w-3.5 h-3.5" />
+                            <X className="w-4 h-4" />
                           </button>
                         </div>
                       ) : (
@@ -726,7 +789,7 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
                           onClick={() => startEditingSubject(sub)}
                           className="inline-flex items-center gap-1 text-xs font-medium text-bluebell hover:text-imperial transition-colors"
                         >
-                          <Edit3 className="w-3 h-3" />
+                          <Edit3 className="w-3.5 h-3.5" />
                           <span>Edit</span>
                         </button>
                       )}
@@ -737,19 +800,15 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
             </tbody>
           </table>
         </div>
-      </div>
+      </section>
 
-      {/* Trajectory Chart + Intervention History */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-        <div className="lg:col-span-6 card-surface p-5">
-          <div className="section-kicker mb-0.5">
-            <span className="section-kicker-num">05 //</span>
-            <span>Cycle Progression</span>
-          </div>
-          <h2 className="font-display text-sm font-bold text-ink-primary mb-3">
-            Assessment Trajectory
+      {/* Assessment Trend + Interventions */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <section className="lg:col-span-6 card-surface p-6">
+          <h2 className="font-display text-lg font-semibold text-carbon mb-4">
+            Assessment trend
           </h2>
-          <div className="h-52 w-full">
+          <div className="h-56 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart
                 data={trajectoryData}
@@ -758,13 +817,13 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
                 <CartesianGrid strokeDasharray="3 3" stroke="#E5E2E7" vertical={false} />
                 <XAxis
                   dataKey="period"
-                  tick={{ fontSize: 11, fill: '#57534E' }}
+                  tick={{ fontSize: 12, fill: '#57534E' }}
                   axisLine={{ stroke: '#E5E2E7' }}
                   tickLine={false}
                 />
                 <YAxis
                   domain={[0, 100]}
-                  tick={{ fontSize: 11, fill: '#78736E' }}
+                  tick={{ fontSize: 12, fill: '#78736E' }}
                   axisLine={false}
                   tickLine={false}
                   unit="%"
@@ -773,12 +832,12 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
                   contentStyle={{
                     backgroundColor: '#FFFAFF',
                     borderColor: '#E5E2E7',
-                    borderRadius: '6px',
+                    borderRadius: '8px',
                     fontSize: '12px',
                     color: '#1E1B18',
                   }}
                 />
-                <Legend wrapperStyle={{ fontSize: '11px' }} />
+                <Legend wrapperStyle={{ fontSize: '12px' }} />
                 <ReferenceLine
                   y={thresholds.passingScorePct}
                   stroke="#D8315B"
@@ -799,47 +858,41 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
               </LineChart>
             </ResponsiveContainer>
           </div>
-        </div>
+        </section>
 
-        <div className="lg:col-span-6 card-surface p-5 flex flex-col justify-between">
+        <section className="lg:col-span-6 card-surface p-6 flex flex-col justify-between">
           <div>
-            <div className="flex items-center justify-between mb-3">
-              <div>
-                <div className="section-kicker mb-0.5">
-                  <span className="section-kicker-num">06 //</span>
-                  <span>Advisory Ledger</span>
-                </div>
-                <h2 className="font-display text-sm font-bold text-ink-primary">
-                  Interventions ({evaluation.interventions.length})
-                </h2>
-              </div>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="font-display text-lg font-semibold text-carbon">
+                Interventions
+              </h2>
               <button
                 type="button"
                 onClick={() => setShowNewIntervention((v) => !v)}
                 className="text-xs font-medium text-bluebell hover:text-imperial inline-flex items-center gap-1 transition-colors"
               >
-                <Plus className="w-3.5 h-3.5" />
-                <span>New</span>
+                <Plus className="w-4 h-4" />
+                <span>Add</span>
               </button>
             </div>
 
             {showNewIntervention && (
               <form
                 onSubmit={handleCreateInterventionSubmit}
-                className="mb-4 p-3 rounded-lg bg-subtle border border-stone-border space-y-2.5 text-xs"
+                className="mb-5 p-4 rounded-lg bg-subtle border border-stone-border space-y-3 text-sm"
               >
                 {intvError && (
-                  <div className="p-2 rounded bg-status-danger-bg border border-status-danger-border text-status-danger-text">
+                  <div className="p-2.5 rounded bg-status-danger-bg border border-status-danger-border text-status-danger-text text-xs">
                     {intvError}
                   </div>
                 )}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <select
                     value={intvSubjectId}
                     onChange={(e) => setIntvSubjectId(e.target.value)}
-                    className="input-field py-1.5 text-xs"
+                    className="input-field py-2 text-sm"
                   >
-                    <option value="">Cohort / Multi-Subject</option>
+                    <option value="">All subjects</option>
                     {dataset.subjects.map((s) => (
                       <option key={s.id} value={s.id}>
                         {s.code}: {s.name}
@@ -851,7 +904,7 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
                     required
                     value={intvFollowUpDate}
                     onChange={(e) => setIntvFollowUpDate(e.target.value)}
-                    className="input-field py-1.5 text-xs tabular-nums"
+                    className="input-field py-2 text-sm tabular-nums"
                   />
                 </div>
                 <input
@@ -860,7 +913,7 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
                   value={intvTitle}
                   onChange={(e) => setIntvTitle(e.target.value)}
                   placeholder="Action title..."
-                  className="input-field py-1.5 text-xs"
+                  className="input-field py-2 text-sm"
                 />
                 <textarea
                   rows={2}
@@ -868,37 +921,37 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
                   value={intvDescription}
                   onChange={(e) => setIntvDescription(e.target.value)}
                   placeholder="Support plan notes..."
-                  className="input-field py-1.5 text-xs"
+                  className="input-field py-2 text-sm"
                 />
                 <div className="flex justify-end gap-2">
                   <button
                     type="button"
                     onClick={() => setShowNewIntervention(false)}
-                    className="btn-tertiary py-1 px-2 text-xs"
+                    className="btn-tertiary py-1.5 px-3 text-xs"
                   >
                     Cancel
                   </button>
-                  <button type="submit" className="btn-primary py-1 px-3 text-xs">
+                  <button type="submit" className="btn-primary py-1.5 px-3.5 text-xs">
                     Save
                   </button>
                 </div>
               </form>
             )}
 
-            <div className="divide-y divide-stone-border text-xs">
+            <div className="divide-y divide-stone-border text-sm">
               {evaluation.interventions.map((intv) => {
                 const isEditingIntv = editingIntvId === intv.id;
                 return (
-                  <div key={intv.id} className="py-2.5 first:pt-0 last:pb-0 space-y-1.5">
+                  <div key={intv.id} className="py-3.5 first:pt-0 last:pb-0 space-y-1.5">
                     <div className="flex items-center justify-between gap-2">
-                      <span className="font-semibold text-ink-primary">
+                      <span className="font-semibold text-carbon">
                         {intv.actionTitle}
                       </span>
                       <InterventionStatusBadge status={intv.status} />
                     </div>
-                    <div className="flex items-center justify-between text-[11px] text-ink-muted tabular-nums">
+                    <div className="flex items-center justify-between text-xs text-ink-muted tabular-nums">
                       <span>
-                        {intv.assignedFaculty} · Follow-up {intv.followUpDate}
+                        {intv.assignedFaculty} · Due {intv.followUpDate}
                       </span>
                       {!isEditingIntv && (
                         <button
@@ -908,28 +961,28 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
                             setIntvStatusDraft(intv.status);
                             setIntvNotesDraft(intv.outcomeNotes);
                           }}
-                          className="text-bluebell hover:text-imperial hover:underline font-medium transition-colors"
+                          className="text-bluebell hover:text-imperial font-medium transition-colors"
                         >
                           Update
                         </button>
                       )}
                     </div>
                     {intv.outcomeNotes && !isEditingIntv && (
-                      <div className="text-[11px] text-ink-secondary">
+                      <div className="text-xs text-ink-secondary">
                         Note: {intv.outcomeNotes}
                       </div>
                     )}
                     {isEditingIntv && (
-                      <div className="pt-2 space-y-2">
+                      <div className="pt-2 space-y-2.5">
                         <select
                           value={intvStatusDraft}
                           onChange={(e) =>
                             setIntvStatusDraft(e.target.value as InterventionStatus)
                           }
-                          className="input-field py-1 text-xs"
+                          className="input-field py-1.5 text-xs"
                         >
                           <option value="PLANNED">Planned</option>
-                          <option value="IN_PROGRESS">In Progress</option>
+                          <option value="IN_PROGRESS">In progress</option>
                           <option value="COMPLETED">Completed</option>
                         </select>
                         <input
@@ -937,20 +990,20 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
                           value={intvNotesDraft}
                           onChange={(e) => setIntvNotesDraft(e.target.value)}
                           placeholder="Outcome note..."
-                          className="input-field py-1 text-xs"
+                          className="input-field py-1.5 text-xs"
                         />
                         <div className="flex justify-end gap-2">
                           <button
                             type="button"
                             onClick={() => setEditingIntvId(null)}
-                            className="btn-tertiary py-1 px-2 text-xs"
+                            className="btn-tertiary py-1 px-2.5 text-xs"
                           >
                             Cancel
                           </button>
                           <button
                             type="button"
                             onClick={() => handleSaveInterventionUpdate(intv.id)}
-                            className="btn-primary py-1 px-2.5 text-xs"
+                            className="btn-primary py-1 px-3 text-xs"
                           >
                             Save
                           </button>
@@ -962,13 +1015,13 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
               })}
 
               {evaluation.interventions.length === 0 && (
-                <div className="py-6 text-center text-xs text-ink-muted">
-                  No interventions recorded for this student.
+                <div className="py-8 text-center text-sm text-ink-muted">
+                  No interventions recorded.
                 </div>
               )}
             </div>
           </div>
-        </div>
+        </section>
       </div>
     </div>
   );

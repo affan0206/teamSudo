@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import {
   ArrowUpRight,
   Calendar,
-  CheckCircle2,
-  Clock,
   Plus,
   X,
 } from 'lucide-react';
@@ -44,7 +42,6 @@ export const InterventionsBoard: React.FC<InterventionsBoardProps> = ({
   const [statusFilter, setStatusFilter] = useState<InterventionStatus | 'ALL'>('ALL');
   const [showCreateModal, setShowCreateModal] = useState(false);
 
-  // Create form state
   const [studentId, setStudentId] = useState(evaluations[0]?.student.id ?? 'stu-001');
   const [subjectId, setSubjectId] = useState<string>('');
   const [actionTitle, setActionTitle] = useState('');
@@ -53,7 +50,6 @@ export const InterventionsBoard: React.FC<InterventionsBoardProps> = ({
   const [followUpDate, setFollowUpDate] = useState('2026-10-18');
   const [formError, setFormError] = useState<string | null>(null);
 
-  // Inline update state
   const [editingId, setEditingId] = useState<string | null>(null);
   const [statusDraft, setStatusDraft] = useState<InterventionStatus>('IN_PROGRESS');
   const [notesDraft, setNotesDraft] = useState('');
@@ -89,19 +85,15 @@ export const InterventionsBoard: React.FC<InterventionsBoardProps> = ({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 lg:space-y-10">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-stone-border pb-5">
+      <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-stone-border pb-6">
         <div>
-          <div className="section-kicker mb-1.5">
-            <span className="section-kicker-num">01 //</span>
-            <span>Academic Support Operations</span>
-          </div>
-          <h1 className="font-display text-2xl font-bold text-ink-primary tracking-tight">
-            Faculty Interventions &amp; Follow-Up Tracker
+          <h1 className="font-display text-2xl sm:text-[28px] lg:text-[30px] font-bold text-carbon tracking-tight">
+            Interventions
           </h1>
-          <p className="text-xs text-ink-secondary mt-1">
-            Monitor planned, active, and completed academic support actions across the cohort.
+          <p className="text-sm text-ink-secondary mt-1">
+            Track faculty mentoring and student follow-ups.
           </p>
         </div>
 
@@ -110,120 +102,86 @@ export const InterventionsBoard: React.FC<InterventionsBoardProps> = ({
           className="btn-primary shrink-0"
         >
           <Plus className="w-4 h-4" />
-          Log New Intervention
+          <span>New intervention</span>
         </button>
-      </div>
+      </header>
 
-      {/* Status Filter Summary Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      {/* 4 Clean Status Filter Metric Cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-5">
         <button
           type="button"
           onClick={() => setStatusFilter('ALL')}
-          className={`card-surface p-4 text-left transition-all border-t-2 border-t-imperial ${
+          className={`card-surface p-6 text-left transition-all border-t-2 border-t-imperial ${
             statusFilter === 'ALL'
               ? 'ring-2 ring-imperial border-imperial bg-imperial-subtle/40'
               : 'hover:bg-subtle/50'
           }`}
         >
-          <div className="section-kicker">
-            <span className="section-kicker-num">A //</span>
-            <span>Total Recorded</span>
-          </div>
-          <div className="font-display text-2xl font-bold text-ink-primary tabular-nums mt-2">
+          <div className="text-sm font-medium text-ink-secondary">All interventions</div>
+          <div className="font-display text-3xl font-bold text-carbon tabular-nums mt-2">
             {dataset.interventions.length}
           </div>
-          <div className="text-[11px] text-ink-muted mt-1">All cohort support actions</div>
         </button>
 
         <button
           type="button"
           onClick={() => setStatusFilter('PLANNED')}
-          className={`card-surface p-4 text-left transition-all border-t-2 border-t-status-warning-dot ${
+          className={`card-surface p-6 text-left transition-all border-t-2 border-t-status-warning-dot ${
             statusFilter === 'PLANNED'
               ? 'ring-2 ring-status-warning-dot border-status-warning-border bg-status-warning-bg/20'
               : 'hover:bg-subtle/50'
           }`}
         >
-          <div className="flex items-center justify-between">
-            <div className="section-kicker">
-              <span className="section-kicker-num">B //</span>
-              <span>Planned</span>
-            </div>
-            <Clock className="w-3.5 h-3.5 text-status-warning-dot" />
-          </div>
-          <div className="font-display text-2xl font-bold text-ink-primary tabular-nums mt-2">
+          <div className="text-sm font-medium text-ink-secondary">Planned</div>
+          <div className="font-display text-3xl font-bold text-carbon tabular-nums mt-2">
             {plannedCount}
           </div>
-          <div className="text-[11px] text-ink-muted mt-1">Scheduled for check-in</div>
         </button>
 
         <button
           type="button"
           onClick={() => setStatusFilter('IN_PROGRESS')}
-          className={`card-surface p-4 text-left transition-all border-t-2 border-t-bluebell ${
+          className={`card-surface p-6 text-left transition-all border-t-2 border-t-bluebell ${
             statusFilter === 'IN_PROGRESS'
               ? 'ring-2 ring-bluebell border-bluebell-border bg-bluebell-light/30'
               : 'hover:bg-subtle/50'
           }`}
         >
-          <div className="flex items-center justify-between">
-            <div className="section-kicker">
-              <span className="section-kicker-num">C //</span>
-              <span>In Progress</span>
-            </div>
-            <Clock className="w-3.5 h-3.5 text-bluebell" />
-          </div>
-          <div className="font-display text-2xl font-bold text-ink-primary tabular-nums mt-2">
+          <div className="text-sm font-medium text-ink-secondary">In progress</div>
+          <div className="font-display text-3xl font-bold text-carbon tabular-nums mt-2">
             {inProgressCount}
           </div>
-          <div className="text-[11px] text-ink-muted mt-1">Active mentoring or labs</div>
         </button>
 
         <button
           type="button"
           onClick={() => setStatusFilter('COMPLETED')}
-          className={`card-surface p-4 text-left transition-all border-t-2 border-t-bluebell ${
+          className={`card-surface p-6 text-left transition-all border-t-2 border-t-bluebell ${
             statusFilter === 'COMPLETED'
               ? 'ring-2 ring-status-success-dot border-status-success-border bg-status-success-bg/20'
               : 'hover:bg-subtle/50'
           }`}
         >
-          <div className="flex items-center justify-between">
-            <div className="section-kicker">
-              <span className="section-kicker-num">D //</span>
-              <span>Completed</span>
-            </div>
-            <CheckCircle2 className="w-3.5 h-3.5 text-status-success-dot" />
-          </div>
-          <div className="font-display text-2xl font-bold text-ink-primary tabular-nums mt-2">
+          <div className="text-sm font-medium text-ink-secondary">Completed</div>
+          <div className="font-display text-3xl font-bold text-carbon tabular-nums mt-2">
             {completedCount}
           </div>
-          <div className="text-[11px] text-ink-muted mt-1">Closed with outcome notes</div>
         </button>
       </div>
 
-      {/* Interventions Table / List Container */}
+      {/* Interventions List Container */}
       <section className="card-surface overflow-hidden">
-        <div className="px-5 py-4 border-b border-stone-border flex items-center justify-between">
-          <div>
-            <div className="section-kicker mb-0.5">
-              <span className="section-kicker-num">02 //</span>
-              <span>Case Management Ledger</span>
-            </div>
-            <h2 className="font-display text-base font-bold text-ink-primary">
-              Intervention Log ({filteredInterventions.length})
-            </h2>
-            <p className="text-xs text-ink-secondary mt-0.5">
-              Click any student name to inspect their full academic standing, or update status and outcome notes inline.
-            </p>
-          </div>
+        <div className="px-6 py-4 border-b border-stone-border flex items-center justify-between">
+          <h2 className="font-display text-lg font-semibold text-carbon">
+            Intervention log ({filteredInterventions.length})
+          </h2>
           {statusFilter !== 'ALL' && (
             <button
               type="button"
               onClick={() => setStatusFilter('ALL')}
               className="text-xs font-medium text-bluebell hover:text-imperial transition-colors"
             >
-              Show All ({dataset.interventions.length})
+              Show all ({dataset.interventions.length})
             </button>
           )}
         </div>
@@ -237,19 +195,19 @@ export const InterventionsBoard: React.FC<InterventionsBoardProps> = ({
             return (
               <div
                 key={intv.id}
-                className="p-5 hover:bg-subtle/30 transition-colors"
+                className="p-6 hover:bg-subtle/30 transition-colors"
               >
-                <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-5">
-                  {/* Left: Student, Action & Evidence Triggers */}
-                  <div className="space-y-2 flex-1">
+                <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6">
+                  {/* Left: Student & Action */}
+                  <div className="space-y-2.5 flex-1">
                     <div className="flex items-center gap-2.5 flex-wrap">
                       <button
                         type="button"
                         onClick={() => onSelectStudent(intv.studentId)}
-                        className="text-sm font-semibold text-ink-primary hover:text-imperial inline-flex items-center gap-1 transition-colors"
+                        className="text-sm font-semibold text-carbon hover:text-imperial inline-flex items-center gap-1 transition-colors"
                       >
                         {studentEval?.student.fullName ?? intv.studentId}
-                        <ArrowUpRight className="w-3.5 h-3.5 text-ink-muted" />
+                        <ArrowUpRight className="w-4 h-4 text-ink-muted" />
                       </button>
                       <span className="font-mono text-xs text-ink-muted">
                         {studentEval?.student.rollNumber}
@@ -261,49 +219,30 @@ export const InterventionsBoard: React.FC<InterventionsBoardProps> = ({
                           showIncompleteTag={studentEval.hasIncompleteData}
                         />
                       )}
-                      {subject ? (
-                        <span className="font-mono text-xs px-2 py-0.5 rounded bg-subtle text-ink-primary border border-stone-border">
-                          {subject.code}: {subject.name}
-                        </span>
-                      ) : (
-                        <span className="text-xs px-2 py-0.5 rounded bg-subtle text-ink-secondary border border-stone-border">
-                          Cohort-Wide Advisory
-                        </span>
-                      )}
+                      <span className="font-mono text-xs px-2 py-0.5 rounded bg-subtle text-carbon border border-stone-border">
+                        {subject ? subject.code : 'General'}
+                      </span>
                     </div>
 
                     <div>
-                      <h3 className="text-sm font-semibold text-ink-primary">
+                      <h3 className="text-sm font-semibold text-carbon">
                         {intv.actionTitle}
                       </h3>
-                      <p className="text-xs text-ink-secondary leading-relaxed mt-1">
+                      <p className="text-sm text-ink-secondary leading-relaxed mt-1 max-w-2xl">
                         {intv.description}
                       </p>
                     </div>
 
-                    {intv.triggerFactors.length > 0 && (
-                      <div className="flex flex-wrap gap-1.5 pt-1">
-                        {intv.triggerFactors.map((tf, idx) => (
-                          <span
-                            key={idx}
-                            className="text-[11px] px-2 py-0.5 rounded bg-subtle/80 border border-stone-border text-ink-secondary"
-                          >
-                            Trigger: {tf}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-
                     {intv.outcomeNotes && !isEditing && (
-                      <div className="mt-2 pt-2 border-t border-stone-border/70 text-xs text-ink-secondary">
-                        <span className="font-semibold text-ink-primary">Outcome Note: </span>
+                      <div className="pt-2 text-xs text-ink-secondary">
+                        <strong className="text-carbon">Outcome: </strong>
                         {intv.outcomeNotes}
                       </div>
                     )}
                   </div>
 
                   {/* Right: Metadata & Inline Status Update */}
-                  <div className="lg:w-80 shrink-0 flex flex-col justify-between gap-3 lg:border-l lg:border-stone-border lg:pl-5">
+                  <div className="lg:w-72 shrink-0 flex flex-col justify-between gap-3 lg:border-l lg:border-stone-border lg:pl-6">
                     <div className="flex items-center justify-between gap-2">
                       <InterventionStatusBadge status={intv.status} />
                       {!isEditing && (
@@ -316,63 +255,49 @@ export const InterventionsBoard: React.FC<InterventionsBoardProps> = ({
                           }}
                           className="text-xs font-medium text-bluebell hover:text-imperial transition-colors"
                         >
-                          Update Status
+                          Update
                         </button>
                       )}
                     </div>
 
                     <div className="text-xs text-ink-secondary space-y-1">
                       <div>
-                        Assigned Faculty:{' '}
-                        <span className="font-medium text-ink-primary">
+                        Faculty:{' '}
+                        <span className="font-medium text-carbon">
                           {intv.assignedFaculty}
                         </span>
                       </div>
                       <div className="flex items-center gap-1.5 tabular-nums text-ink-muted">
                         <Calendar className="w-3.5 h-3.5" />
-                        <span>Logged {intv.createdDate}</span>
-                        <span>·</span>
-                        <span className="text-ink-secondary font-medium">
-                          Follow-up {intv.followUpDate}
-                        </span>
+                        <span>Due {intv.followUpDate}</span>
                       </div>
                     </div>
 
                     {isEditing && (
-                      <div className="p-3 rounded-lg bg-subtle/70 border border-stone-border space-y-2.5">
-                        <div>
-                          <label className="block text-[11px] font-medium text-ink-secondary mb-1">
-                            Status
-                          </label>
-                          <select
-                            value={statusDraft}
-                            onChange={(e) =>
-                              setStatusDraft(e.target.value as InterventionStatus)
-                            }
-                            className="input-field py-1.5 text-xs"
-                          >
-                            <option value="PLANNED">Planned</option>
-                            <option value="IN_PROGRESS">In Progress</option>
-                            <option value="COMPLETED">Completed</option>
-                          </select>
-                        </div>
-                        <div>
-                          <label className="block text-[11px] font-medium text-ink-secondary mb-1">
-                            Outcome / Progress Note
-                          </label>
-                          <textarea
-                            rows={2}
-                            value={notesDraft}
-                            onChange={(e) => setNotesDraft(e.target.value)}
-                            placeholder="Enter outcome or progress note..."
-                            className="input-field py-1.5 text-xs"
-                          />
-                        </div>
+                      <div className="p-3.5 rounded-lg bg-subtle/70 border border-stone-border space-y-3">
+                        <select
+                          value={statusDraft}
+                          onChange={(e) =>
+                            setStatusDraft(e.target.value as InterventionStatus)
+                          }
+                          className="input-field py-2 text-xs"
+                        >
+                          <option value="PLANNED">Planned</option>
+                          <option value="IN_PROGRESS">In progress</option>
+                          <option value="COMPLETED">Completed</option>
+                        </select>
+                        <textarea
+                          rows={2}
+                          value={notesDraft}
+                          onChange={(e) => setNotesDraft(e.target.value)}
+                          placeholder="Outcome note..."
+                          className="input-field py-2 text-xs"
+                        />
                         <div className="flex justify-end gap-2">
                           <button
                             type="button"
                             onClick={() => setEditingId(null)}
-                            className="btn-tertiary text-xs py-1 px-2"
+                            className="btn-tertiary text-xs py-1.5 px-2.5"
                           >
                             Cancel
                           </button>
@@ -386,9 +311,9 @@ export const InterventionsBoard: React.FC<InterventionsBoardProps> = ({
                               );
                               setEditingId(null);
                             }}
-                            className="btn-primary text-xs py-1 px-3"
+                            className="btn-primary text-xs py-1.5 px-3"
                           >
-                            Save Update
+                            Save
                           </button>
                         </div>
                       </div>
@@ -403,37 +328,32 @@ export const InterventionsBoard: React.FC<InterventionsBoardProps> = ({
 
       {/* Create Intervention Modal */}
       {showCreateModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink-primary/40 backdrop-blur-[1px] p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-carbon/40 backdrop-blur-[1px] p-4">
           <div className="bg-surface border border-stone-border rounded-xl shadow-elevated max-w-lg w-full overflow-hidden">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-stone-border bg-subtle/50">
-              <div>
-                <h2 className="text-base font-semibold text-ink-primary">
-                  Record Academic Support Intervention
-                </h2>
-                <p className="text-xs text-ink-secondary mt-0.5">
-                  Assign a constructive follow-up action for a student requiring support.
-                </p>
-              </div>
+            <div className="flex items-center justify-between px-6 py-4 border-b border-stone-border bg-subtle/50">
+              <h2 className="font-display text-lg font-semibold text-carbon">
+                New intervention
+              </h2>
               <button
                 type="button"
                 onClick={() => setShowCreateModal(false)}
-                className="p-1.5 rounded-md text-ink-muted hover:text-ink-primary hover:bg-subtle transition-colors"
+                className="p-1.5 rounded-lg text-ink-muted hover:text-carbon hover:bg-subtle transition-colors"
                 aria-label="Close modal"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <form onSubmit={handleCreateSubmit} className="p-5 space-y-4 text-xs">
+            <form onSubmit={handleCreateSubmit} className="p-6 space-y-5 text-sm">
               {formError && (
-                <div className="p-3 rounded-lg bg-status-danger-bg border border-status-danger-border text-status-danger-text">
+                <div className="p-3.5 rounded-lg bg-status-danger-bg border border-status-danger-border text-status-danger-text text-xs">
                   {formError}
                 </div>
               )}
 
               <div>
-                <label className="block font-medium text-ink-primary mb-1.5">
-                  Student *
+                <label className="block font-medium text-carbon mb-1.5">
+                  Student
                 </label>
                 <select
                   value={studentId}
@@ -448,23 +368,23 @@ export const InterventionsBoard: React.FC<InterventionsBoardProps> = ({
                 >
                   {evaluations.map((ev) => (
                     <option key={ev.student.id} value={ev.student.id}>
-                      {ev.student.rollNumber} — {ev.student.fullName} ({ev.riskLevel})
+                      {ev.student.rollNumber} — {ev.student.fullName}
                     </option>
                   ))}
                 </select>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block font-medium text-ink-primary mb-1.5">
-                    Target Subject
+                  <label className="block font-medium text-carbon mb-1.5">
+                    Subject
                   </label>
                   <select
                     value={subjectId}
                     onChange={(e) => setSubjectId(e.target.value)}
                     className="input-field"
                   >
-                    <option value="">Cohort / Multi-Subject</option>
+                    <option value="">All subjects</option>
                     {dataset.subjects.map((s) => (
                       <option key={s.id} value={s.id}>
                         {s.code}: {s.name}
@@ -474,8 +394,8 @@ export const InterventionsBoard: React.FC<InterventionsBoardProps> = ({
                 </div>
 
                 <div>
-                  <label className="block font-medium text-ink-primary mb-1.5">
-                    Assigned Faculty *
+                  <label className="block font-medium text-carbon mb-1.5">
+                    Assigned faculty
                   </label>
                   <input
                     type="text"
@@ -487,24 +407,24 @@ export const InterventionsBoard: React.FC<InterventionsBoardProps> = ({
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="sm:col-span-2">
-                  <label className="block font-medium text-ink-primary mb-1.5">
-                    Intervention Action Title *
+                  <label className="block font-medium text-carbon mb-1.5">
+                    Action title
                   </label>
                   <input
                     type="text"
                     required
                     value={actionTitle}
                     onChange={(e) => setActionTitle(e.target.value)}
-                    placeholder="e.g., Weekly Remedial Lab & Attendance Check-in"
+                    placeholder="e.g., Weekly Remedial Lab"
                     className="input-field"
                   />
                 </div>
 
                 <div>
-                  <label className="block font-medium text-ink-primary mb-1.5">
-                    Follow-Up Date *
+                  <label className="block font-medium text-carbon mb-1.5">
+                    Follow-up date
                   </label>
                   <input
                     type="date"
@@ -517,29 +437,29 @@ export const InterventionsBoard: React.FC<InterventionsBoardProps> = ({
               </div>
 
               <div>
-                <label className="block font-medium text-ink-primary mb-1.5">
-                  Support Plan Description *
+                <label className="block font-medium text-carbon mb-1.5">
+                  Notes
                 </label>
                 <textarea
                   rows={3}
                   required
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Outline the constructive academic support plan..."
+                  placeholder="Outline the academic support plan..."
                   className="input-field"
                 />
               </div>
 
-              <div className="pt-3 border-t border-stone-border flex justify-end gap-2">
+              <div className="pt-4 border-t border-stone-border flex justify-end gap-2.5">
                 <button
                   type="button"
                   onClick={() => setShowCreateModal(false)}
-                  className="btn-secondary text-xs py-1.5"
+                  className="btn-secondary"
                 >
                   Cancel
                 </button>
-                <button type="submit" className="btn-primary text-xs py-1.5">
-                  Save Intervention
+                <button type="submit" className="btn-primary">
+                  Save intervention
                 </button>
               </div>
             </form>

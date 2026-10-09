@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { RotateCcw, SlidersHorizontal, X, Check, Info } from 'lucide-react';
+import { RotateCcw, SlidersHorizontal, X, Check } from 'lucide-react';
 import { RiskThresholds } from '../types/academic';
 import { DEFAULT_RISK_THRESHOLDS } from '../data/syntheticCohort';
 
@@ -24,15 +24,15 @@ export const RiskThresholdsModal: React.FC<RiskThresholdsModalProps> = ({
   const handleApply = (e: React.FormEvent) => {
     e.preventDefault();
     if (draft.criticalAttendancePct >= draft.warningAttendancePct) {
-      setError('Critical attendance threshold must be lower than Warning attendance threshold.');
+      setError('Critical attendance must be lower than warning attendance.');
       return;
     }
     if (draft.passingScorePct >= draft.borderlineScorePct) {
-      setError('Passing score threshold must be lower than Borderline score buffer.');
+      setError('Passing score must be lower than borderline score.');
       return;
     }
     if (draft.severeDropPoints <= draft.moderateDropPoints) {
-      setError('Severe drop points must be greater than Moderate drop points.');
+      setError('Severe drop points must be greater than moderate drop points.');
       return;
     }
     setError(null);
@@ -48,50 +48,36 @@ export const RiskThresholdsModal: React.FC<RiskThresholdsModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-carbon/40 backdrop-blur-[1px] p-4">
       <div className="bg-surface border border-stone-border rounded-xl shadow-elevated max-w-lg w-full overflow-hidden">
-        <div className="flex items-center justify-between px-5 py-4 border-b border-stone-border bg-subtle/50">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-stone-border bg-subtle/50">
           <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-md bg-bluebell-light border border-bluebell-border flex items-center justify-center text-imperial">
-              <SlidersHorizontal className="w-3.5 h-3.5" />
+            <div className="w-8 h-8 rounded-lg bg-bluebell-light border border-bluebell-border flex items-center justify-center text-imperial">
+              <SlidersHorizontal className="w-4 h-4" />
             </div>
-            <div>
-              <h2 className="text-base font-semibold text-imperial">
-                Academic Risk Engine Rules &amp; Thresholds
-              </h2>
-              <p className="text-xs text-ink-secondary">
-                Configure deterministic early-warning classification parameters
-              </p>
-            </div>
+            <h2 className="font-display text-lg font-semibold text-carbon">
+              Risk thresholds
+            </h2>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="text-ink-muted hover:text-imperial p-1.5 rounded-md hover:bg-subtle transition-colors"
+            className="text-ink-muted hover:text-imperial p-1.5 rounded-lg hover:bg-subtle transition-colors"
             aria-label="Close modal"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
-        <form onSubmit={handleApply} className="p-5 space-y-4">
-          <div className="flex items-start gap-2.5 p-3.5 rounded-lg bg-status-info-bg border border-status-info-border text-xs text-ink-secondary leading-relaxed">
-            <Info className="w-4 h-4 text-bluebell shrink-0 mt-0.5" />
-            <div>
-              <strong className="text-imperial">Explainable Rules-Based Model:</strong> Thresholds
-              below govern how students are classified into High, Medium, or Low Risk. Adjusting these
-              parameters recalculates all cohort metrics and recommendations immediately.
-            </div>
-          </div>
-
+        <form onSubmit={handleApply} className="p-6 space-y-5">
           {error && (
-            <div className="p-3 rounded-lg bg-status-danger-bg border border-status-danger-border text-xs text-status-danger-text">
+            <div className="p-3.5 rounded-lg bg-status-danger-bg border border-status-danger-border text-sm text-status-danger-text">
               {error}
             </div>
           )}
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <div>
-              <label className="block text-xs font-medium text-ink-primary mb-1">
-                Critical Attendance Floor (%)
+              <label className="block text-sm font-medium text-carbon mb-1.5">
+                Critical attendance (%)
               </label>
               <input
                 type="number"
@@ -104,14 +90,14 @@ export const RiskThresholdsModal: React.FC<RiskThresholdsModalProps> = ({
                 }
                 className="input-field tabular-nums"
               />
-              <span className="block text-[11px] text-ink-muted mt-1">
-                Default: 75%. Below triggers High/Medium Risk.
+              <span className="block text-xs text-ink-muted mt-1">
+                Default: 75%
               </span>
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-ink-primary mb-1">
-                Attendance Warning Buffer (%)
+              <label className="block text-sm font-medium text-carbon mb-1.5">
+                Warning attendance (%)
               </label>
               <input
                 type="number"
@@ -124,14 +110,14 @@ export const RiskThresholdsModal: React.FC<RiskThresholdsModalProps> = ({
                 }
                 className="input-field tabular-nums"
               />
-              <span className="block text-[11px] text-ink-muted mt-1">
-                Default: 85%. Early-warning attendance zone.
+              <span className="block text-xs text-ink-muted mt-1">
+                Default: 85%
               </span>
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-ink-primary mb-1">
-                Subject Passing Score (%)
+              <label className="block text-sm font-medium text-carbon mb-1.5">
+                Passing score (%)
               </label>
               <input
                 type="number"
@@ -142,14 +128,14 @@ export const RiskThresholdsModal: React.FC<RiskThresholdsModalProps> = ({
                 onChange={(e) => setDraft({ ...draft, passingScorePct: Number(e.target.value) })}
                 className="input-field tabular-nums"
               />
-              <span className="block text-[11px] text-ink-muted mt-1">
-                Default: 50%. Failing ≥2 subjects = High Risk.
+              <span className="block text-xs text-ink-muted mt-1">
+                Default: 50%
               </span>
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-ink-primary mb-1">
-                Borderline Score Buffer (%)
+              <label className="block text-sm font-medium text-carbon mb-1.5">
+                Borderline score (%)
               </label>
               <input
                 type="number"
@@ -162,14 +148,14 @@ export const RiskThresholdsModal: React.FC<RiskThresholdsModalProps> = ({
                 }
                 className="input-field tabular-nums"
               />
-              <span className="block text-[11px] text-ink-muted mt-1">
-                Default: 60%. Flags borderline subjects.
+              <span className="block text-xs text-ink-muted mt-1">
+                Default: 60%
               </span>
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-ink-primary mb-1">
-                Severe Assessment Drop (pts)
+              <label className="block text-sm font-medium text-carbon mb-1.5">
+                Severe score drop (pts)
               </label>
               <input
                 type="number"
@@ -182,14 +168,14 @@ export const RiskThresholdsModal: React.FC<RiskThresholdsModalProps> = ({
                 }
                 className="input-field tabular-nums"
               />
-              <span className="block text-[11px] text-ink-muted mt-1">
-                Default: 15 pts drop between consecutive exams.
+              <span className="block text-xs text-ink-muted mt-1">
+                Default: 15 pts
               </span>
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-ink-primary mb-1">
-                Moderate Assessment Drop (pts)
+              <label className="block text-sm font-medium text-carbon mb-1.5">
+                Moderate score drop (pts)
               </label>
               <input
                 type="number"
@@ -202,8 +188,8 @@ export const RiskThresholdsModal: React.FC<RiskThresholdsModalProps> = ({
                 }
                 className="input-field tabular-nums"
               />
-              <span className="block text-[11px] text-ink-muted mt-1">
-                Default: 8 pts drop triggers Medium Risk.
+              <span className="block text-xs text-ink-muted mt-1">
+                Default: 8 pts
               </span>
             </div>
           </div>
@@ -212,25 +198,25 @@ export const RiskThresholdsModal: React.FC<RiskThresholdsModalProps> = ({
             <button
               type="button"
               onClick={handleReset}
-              className="btn-secondary text-xs py-1.5"
+              className="btn-secondary"
             >
-              <RotateCcw className="w-3.5 h-3.5 text-bluebell" />
-              Restore Defaults
+              <RotateCcw className="w-4 h-4 text-bluebell" />
+              <span>Reset defaults</span>
             </button>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2.5">
               <button
                 type="button"
                 onClick={onClose}
-                className="btn-tertiary text-xs py-1.5"
+                className="btn-tertiary"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="btn-primary text-xs py-1.5"
+                className="btn-primary"
               >
-                <Check className="w-3.5 h-3.5" />
-                Apply Rules &amp; Recalculate
+                <Check className="w-4 h-4" />
+                <span>Apply rules</span>
               </button>
             </div>
           </div>

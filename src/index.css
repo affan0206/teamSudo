@@ -120,15 +120,9 @@
 }
 
 @layer components {
-  /* Editorial Section Kicker (e.g., "01 // COHORT TELEMETRY") */
-  .section-kicker {
-    @apply inline-flex items-center gap-2 font-mono text-[11px] font-medium tracking-[0.08em] uppercase;
-    color: var(--color-secondary);
-  }
-
   /* Primary button: Imperial Blue (#0A2463) with Ghost White (#FFFAFF) text */
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 px-4 py-2 text-xs font-semibold rounded-md transition-all duration-150 active:scale-[0.99] disabled:opacity-45 disabled:pointer-events-none;
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-150 active:scale-[0.99] disabled:opacity-45 disabled:pointer-events-none;
     background-color: var(--color-primary);
     color: var(--color-background);
     box-shadow: 0 1px 2px 0 rgba(10, 36, 99, 0.12);
@@ -136,12 +130,12 @@
 
   .btn-primary:hover {
     background-color: var(--color-primary-hover);
-    box-shadow: 0 4px 12px -2px rgba(10, 36, 99, 0.22);
+    box-shadow: 0 4px 12px -2px rgba(10, 36, 99, 0.2);
   }
 
   /* Secondary button: White surface with crisp border and Blue Bell hover accent */
   .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 px-3.5 py-2 text-xs font-medium rounded-md transition-all duration-150 active:scale-[0.99] disabled:opacity-45 disabled:pointer-events-none;
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-150 active:scale-[0.99] disabled:opacity-45 disabled:pointer-events-none;
     background-color: var(--color-surface);
     color: var(--color-primary);
     border: 1px solid var(--color-border);
@@ -156,7 +150,7 @@
 
   /* Tertiary button */
   .btn-tertiary {
-    @apply inline-flex items-center justify-center gap-1.5 px-2.5 py-1.5 text-xs font-medium rounded-md transition-colors duration-150;
+    @apply inline-flex items-center justify-center gap-1.5 px-3 py-2 text-sm font-medium rounded-lg transition-colors duration-150;
     color: var(--color-text-secondary);
   }
 
@@ -167,7 +161,7 @@
 
   /* Form input field with Blue Bell focus border */
   .input-field {
-    @apply w-full px-3 py-2 text-xs rounded-md transition-all duration-150;
+    @apply w-full px-3.5 py-2.5 text-sm rounded-lg transition-all duration-150;
     color: var(--color-text);
     background-color: var(--color-surface);
     border: 1px solid var(--color-border);
@@ -187,7 +181,7 @@
   .card-surface {
     background-color: var(--color-surface);
     border: 1px solid var(--color-border);
-    border-radius: 0.5rem;
+    border-radius: 0.75rem;
     box-shadow: 0 1px 3px 0 rgba(10, 36, 99, 0.04), 0 1px 2px -1px rgba(30, 27, 24, 0.03);
   }
 
@@ -196,8 +190,8 @@
     background-color: var(--color-primary);
     color: var(--color-background);
     border: 1px solid rgba(62, 146, 204, 0.28);
-    border-radius: 0.5rem;
-    box-shadow: 0 20px 44px -10px rgba(10, 36, 99, 0.25), 0 4px 12px -2px rgba(10, 36, 99, 0.12);
+    border-radius: 0.75rem;
+    box-shadow: 0 16px 36px -10px rgba(10, 36, 99, 0.22), 0 4px 12px -2px rgba(10, 36, 99, 0.1);
   }
 }
 
