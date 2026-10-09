@@ -93,7 +93,7 @@ export const InterventionsBoard: React.FC<InterventionsBoardProps> = ({
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-stone-border pb-5">
         <div>
-          <div className="text-[11px] font-semibold uppercase tracking-wider text-forest mb-1">
+          <div className="text-[11px] font-semibold uppercase tracking-wider text-bluebell mb-1">
             Academic Support Operations
           </div>
           <h1 className="text-2xl font-semibold text-ink-primary tracking-tight">
@@ -118,9 +118,9 @@ export const InterventionsBoard: React.FC<InterventionsBoardProps> = ({
         <button
           type="button"
           onClick={() => setStatusFilter('ALL')}
-          className={`card-surface p-4 text-left transition-all ${
+          className={`card-surface p-4 text-left transition-all border-t-2 border-t-imperial ${
             statusFilter === 'ALL'
-              ? 'ring-2 ring-forest border-forest'
+              ? 'ring-2 ring-imperial border-imperial bg-imperial-subtle/40'
               : 'hover:bg-subtle/50'
           }`}
         >
@@ -134,7 +134,7 @@ export const InterventionsBoard: React.FC<InterventionsBoardProps> = ({
         <button
           type="button"
           onClick={() => setStatusFilter('PLANNED')}
-          className={`card-surface p-4 text-left transition-all ${
+          className={`card-surface p-4 text-left transition-all border-t-2 border-t-status-warning-dot ${
             statusFilter === 'PLANNED'
               ? 'ring-2 ring-status-warning-dot border-status-warning-border bg-status-warning-bg/20'
               : 'hover:bg-subtle/50'
@@ -153,15 +153,15 @@ export const InterventionsBoard: React.FC<InterventionsBoardProps> = ({
         <button
           type="button"
           onClick={() => setStatusFilter('IN_PROGRESS')}
-          className={`card-surface p-4 text-left transition-all ${
+          className={`card-surface p-4 text-left transition-all border-t-2 border-t-bluebell ${
             statusFilter === 'IN_PROGRESS'
-              ? 'ring-2 ring-forest border-forest bg-forest-light/20'
+              ? 'ring-2 ring-bluebell border-bluebell-border bg-bluebell-light/30'
               : 'hover:bg-subtle/50'
           }`}
         >
           <div className="text-xs font-medium text-ink-secondary flex items-center justify-between">
             <span>In Progress</span>
-            <Clock className="w-3.5 h-3.5 text-forest" />
+            <Clock className="w-3.5 h-3.5 text-bluebell" />
           </div>
           <div className="text-2xl font-semibold text-ink-primary tabular-nums mt-1">
             {inProgressCount}
@@ -172,7 +172,7 @@ export const InterventionsBoard: React.FC<InterventionsBoardProps> = ({
         <button
           type="button"
           onClick={() => setStatusFilter('COMPLETED')}
-          className={`card-surface p-4 text-left transition-all ${
+          className={`card-surface p-4 text-left transition-all border-t-2 border-t-bluebell ${
             statusFilter === 'COMPLETED'
               ? 'ring-2 ring-status-success-dot border-status-success-border bg-status-success-bg/20'
               : 'hover:bg-subtle/50'
@@ -204,7 +204,7 @@ export const InterventionsBoard: React.FC<InterventionsBoardProps> = ({
             <button
               type="button"
               onClick={() => setStatusFilter('ALL')}
-              className="text-xs font-medium text-forest hover:text-forest-hover"
+              className="text-xs font-medium text-bluebell hover:text-imperial transition-colors"
             >
               Show All ({dataset.interventions.length})
             </button>
@@ -229,7 +229,7 @@ export const InterventionsBoard: React.FC<InterventionsBoardProps> = ({
                       <button
                         type="button"
                         onClick={() => onSelectStudent(intv.studentId)}
-                        className="text-sm font-semibold text-ink-primary hover:text-forest inline-flex items-center gap-1 transition-colors"
+                        className="text-sm font-semibold text-ink-primary hover:text-imperial inline-flex items-center gap-1 transition-colors"
                       >
                         {studentEval?.student.fullName ?? intv.studentId}
                         <ArrowUpRight className="w-3.5 h-3.5 text-ink-muted" />
@@ -297,7 +297,7 @@ export const InterventionsBoard: React.FC<InterventionsBoardProps> = ({
                             setStatusDraft(intv.status);
                             setNotesDraft(intv.outcomeNotes);
                           }}
-                          className="text-xs font-medium text-forest hover:text-forest-hover"
+                          className="text-xs font-medium text-bluebell hover:text-imperial transition-colors"
                         >
                           Update Status
                         </button>

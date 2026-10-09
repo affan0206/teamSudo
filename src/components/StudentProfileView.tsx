@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import {
   ArrowLeft,
-  Calendar,
   Check,
   ChevronDown,
   ChevronUp,
@@ -64,7 +63,7 @@ interface StudentProfileViewProps {
   ) => Promise<string | undefined>;
 }
 
-const SUBJECT_LINE_COLORS = ['#285C46', '#C8811A', '#2B5B84', '#7A4988', '#C93B3B'];
+const SUBJECT_LINE_COLORS = ['#0A2463', '#3E92CC', '#D8315B', '#57534E', '#1E1B18'];
 
 export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
   evaluation,
@@ -275,12 +274,18 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
 
       {/* 4 Compact Academic Standing Metric Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="card-surface p-4">
+        <div
+          className={`card-surface p-4 border-t-2 ${
+            (evaluation.overallScorePercentage ?? 100) < thresholds.passingScorePct
+              ? 'border-t-magenta'
+              : 'border-t-imperial'
+          }`}
+        >
           <div className="text-xs font-medium text-ink-secondary">Academic Score</div>
           <div
             className={`text-2xl font-semibold tabular-nums mt-1 ${
               (evaluation.overallScorePercentage ?? 100) < thresholds.passingScorePct
-                ? 'text-status-danger-text'
+                ? 'text-magenta'
                 : 'text-ink-primary'
             }`}
           >
@@ -293,12 +298,18 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
           </div>
         </div>
 
-        <div className="card-surface p-4">
+        <div
+          className={`card-surface p-4 border-t-2 ${
+            (evaluation.overallAttendancePercentage ?? 100) < thresholds.criticalAttendancePct
+              ? 'border-t-magenta'
+              : 'border-t-bluebell'
+          }`}
+        >
           <div className="text-xs font-medium text-ink-secondary">Attendance</div>
           <div
             className={`text-2xl font-semibold tabular-nums mt-1 ${
               (evaluation.overallAttendancePercentage ?? 100) < thresholds.criticalAttendancePct
-                ? 'text-status-danger-text'
+                ? 'text-magenta'
                 : 'text-ink-primary'
             }`}
           >
@@ -311,7 +322,7 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
           </div>
         </div>
 
-        <div className="card-surface p-4">
+        <div className="card-surface p-4 border-t-2 border-t-bluebell">
           <div className="text-xs font-medium text-ink-secondary">Recent Trend</div>
           <div className="mt-1.5">
             <TrendDeltaPill delta={evaluation.overallTrendDeltaPoints} />
@@ -319,7 +330,7 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
           <div className="text-[11px] text-ink-muted mt-1">Midterm → Assessment 2</div>
         </div>
 
-        <div className="card-surface p-4">
+        <div className="card-surface p-4 border-t-2 border-t-imperial">
           <div className="text-xs font-medium text-ink-secondary">Interventions</div>
           <div className="text-2xl font-semibold text-ink-primary tabular-nums mt-1">
             {evaluation.interventions.length}
@@ -397,7 +408,7 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
                           [ev.id]: !prev[ev.id],
                         }))
                       }
-                      className="text-xs font-medium text-forest hover:text-forest-hover shrink-0 inline-flex items-center gap-0.5"
+                      className="text-xs font-medium text-bluebell hover:text-imperial shrink-0 inline-flex items-center gap-0.5 transition-colors"
                     >
                       <span>{isExpanded ? 'Hide' : 'Details'}</span>
                       {isExpanded ? (
@@ -479,13 +490,13 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
                   </div>
 
                   {isExpanded && (
-                    <div className="mt-2 pl-2 border-l-2 border-stone-border space-y-1 text-ink-secondary">
+                    <div className="mt-2 pl-2 border-l-2 border-bluebell-border space-y-1 text-ink-secondary">
                       <div>
                         <strong className="text-ink-primary">Faculty:</strong>{' '}
                         {rec.facultyAction}
                       </div>
                       <div>
-                        <strong className="text-forest">Student:</strong>{' '}
+                        <strong className="text-bluebell">Student:</strong>{' '}
                         {rec.studentGuidance}
                       </div>
                     </div>
@@ -532,7 +543,7 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
                 return (
                   <tr
                     key={sub.subject.id}
-                    className={isEditing ? 'bg-forest-subtle' : 'hover:bg-subtle/40'}
+                    className={isEditing ? 'bg-imperial-subtle' : 'hover:bg-subtle/40'}
                   >
                     <td className="py-3 px-4">
                       <div className="font-semibold text-ink-primary">
@@ -658,7 +669,7 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
                           <button
                             type="button"
                             onClick={() => handleSaveSubjectEdits(sub)}
-                            className="p-1.5 rounded bg-forest text-white hover:bg-forest-hover"
+                            className="p-1.5 rounded bg-imperial text-ghost hover:bg-imperial-hover"
                             title="Save"
                           >
                             <Check className="w-3.5 h-3.5" />
@@ -676,7 +687,7 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
                         <button
                           type="button"
                           onClick={() => startEditingSubject(sub)}
-                          className="inline-flex items-center gap-1 text-xs font-medium text-forest hover:text-forest-hover"
+                          className="inline-flex items-center gap-1 text-xs font-medium text-bluebell hover:text-imperial transition-colors"
                         >
                           <Edit3 className="w-3 h-3" />
                           <span>Edit</span>
@@ -703,32 +714,33 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
                 data={trajectoryData}
                 margin={{ top: 8, right: 12, left: -16, bottom: 4 }}
               >
-                <CartesianGrid strokeDasharray="3 3" stroke="#E6E8E2" vertical={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#E5E2E7" vertical={false} />
                 <XAxis
                   dataKey="period"
-                  tick={{ fontSize: 11, fill: '#5A625C' }}
-                  axisLine={{ stroke: '#E6E8E2' }}
+                  tick={{ fontSize: 11, fill: '#57534E' }}
+                  axisLine={{ stroke: '#E5E2E7' }}
                   tickLine={false}
                 />
                 <YAxis
                   domain={[0, 100]}
-                  tick={{ fontSize: 11, fill: '#747A74' }}
+                  tick={{ fontSize: 11, fill: '#78736E' }}
                   axisLine={false}
                   tickLine={false}
                   unit="%"
                 />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: '#FFFFFF',
-                    borderColor: '#E6E8E2',
+                    backgroundColor: '#FFFAFF',
+                    borderColor: '#E5E2E7',
                     borderRadius: '6px',
                     fontSize: '12px',
+                    color: '#1E1B18',
                   }}
                 />
                 <Legend wrapperStyle={{ fontSize: '11px' }} />
                 <ReferenceLine
                   y={thresholds.passingScorePct}
-                  stroke="#C93B3B"
+                  stroke="#D8315B"
                   strokeDasharray="4 4"
                 />
                 {evaluation.subjectSummaries.map((sub, idx) => (
@@ -757,7 +769,7 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
               <button
                 type="button"
                 onClick={() => setShowNewIntervention((v) => !v)}
-                className="text-xs font-medium text-forest hover:text-forest-hover inline-flex items-center gap-1"
+                className="text-xs font-medium text-bluebell hover:text-imperial inline-flex items-center gap-1 transition-colors"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>New</span>
@@ -849,7 +861,7 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
                             setIntvStatusDraft(intv.status);
                             setIntvNotesDraft(intv.outcomeNotes);
                           }}
-                          className="text-forest hover:underline font-medium"
+                          className="text-bluebell hover:text-imperial hover:underline font-medium transition-colors"
                         >
                           Update
                         </button>

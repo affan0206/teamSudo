@@ -141,7 +141,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
             onClick={onNavigateRecords}
             className="btn-secondary text-xs py-1.5"
           >
-            <Upload className="w-3.5 h-3.5 text-forest" />
+            <Upload className="w-3.5 h-3.5 text-bluebell" />
             <span>Import Marks</span>
           </button>
           <button
@@ -160,7 +160,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
         aria-label="Key Academic Metrics"
         className="grid grid-cols-2 lg:grid-cols-4 gap-4"
       >
-        <div className="card-surface p-4">
+        <div className="card-surface p-4 border-t-2 border-t-imperial">
           <div className="text-xs font-medium text-ink-secondary">Total Students</div>
           <div className="text-2xl font-semibold text-ink-primary tabular-nums mt-1">
             {metrics.totalStudents}
@@ -168,7 +168,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
           <div className="text-[11px] text-ink-muted mt-1">Active cohort</div>
         </div>
 
-        <div className="card-surface p-4">
+        <div className="card-surface p-4 border-t-2 border-t-bluebell">
           <div className="text-xs font-medium text-ink-secondary">Average Score</div>
           <div className="text-2xl font-semibold text-ink-primary tabular-nums mt-1">
             {metrics.cohortAverageScore !== null ? `${metrics.cohortAverageScore}%` : '—'}
@@ -178,7 +178,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
           </div>
         </div>
 
-        <div className="card-surface p-4">
+        <div className="card-surface p-4 border-t-2 border-t-bluebell">
           <div className="text-xs font-medium text-ink-secondary">Average Attendance</div>
           <div className="text-2xl font-semibold text-ink-primary tabular-nums mt-1">
             {metrics.cohortAverageAttendance !== null
@@ -190,10 +190,10 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
           </div>
         </div>
 
-        <div className="card-surface p-4">
+        <div className="card-surface p-4 border-t-2 border-t-magenta">
           <div className="text-xs font-medium text-ink-secondary">Students at Risk</div>
           <div className="flex items-baseline gap-2 mt-1">
-            <span className="text-2xl font-semibold text-status-danger-text tabular-nums">
+            <span className="text-2xl font-semibold text-magenta tabular-nums">
               {studentsAtRiskCount}
             </span>
             <span className="text-xs text-ink-muted tabular-nums">
@@ -218,11 +218,11 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
             </div>
             <div className="flex items-center gap-4 text-xs text-ink-secondary">
               <span className="inline-flex items-center gap-1.5">
-                <span className="w-2.5 h-0.5 bg-forest inline-block" />
+                <span className="w-2.5 h-0.5 bg-imperial inline-block" />
                 Cohort Avg
               </span>
               <span className="inline-flex items-center gap-1.5">
-                <span className="w-2.5 h-0.5 bg-status-danger-dot inline-block" />
+                <span className="w-2.5 h-0.5 bg-magenta inline-block" />
                 High-Risk Avg
               </span>
             </div>
@@ -234,49 +234,50 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
                 data={metrics.assessmentCycleTrend}
                 margin={{ top: 6, right: 16, left: -16, bottom: 2 }}
               >
-                <CartesianGrid strokeDasharray="3 3" stroke="#E6E8E2" vertical={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#E5E2E7" vertical={false} />
                 <XAxis
                   dataKey="cycleLabel"
-                  tick={{ fontSize: 11, fill: '#5A625C' }}
-                  axisLine={{ stroke: '#E6E8E2' }}
+                  tick={{ fontSize: 11, fill: '#57534E' }}
+                  axisLine={{ stroke: '#E5E2E7' }}
                   tickLine={false}
                 />
                 <YAxis
                   domain={[25, 95]}
-                  tick={{ fontSize: 11, fill: '#747A74' }}
+                  tick={{ fontSize: 11, fill: '#78736E' }}
                   axisLine={false}
                   tickLine={false}
                   unit="%"
                 />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: '#FFFFFF',
-                    borderColor: '#E6E8E2',
+                    backgroundColor: '#FFFAFF',
+                    borderColor: '#E5E2E7',
                     borderRadius: '6px',
                     fontSize: '12px',
+                    color: '#1E1B18',
                   }}
                 />
                 <ReferenceLine
                   y={thresholds.passingScorePct}
-                  stroke="#C8811A"
+                  stroke="#3E92CC"
                   strokeDasharray="4 4"
                 />
                 <Line
                   type="monotone"
                   dataKey="cohortAvgPct"
                   name="Cohort Avg (%)"
-                  stroke="#285C46"
+                  stroke="#0A2463"
                   strokeWidth={2}
-                  dot={{ r: 3.5, fill: '#285C46', strokeWidth: 0 }}
+                  dot={{ r: 3.5, fill: '#0A2463', strokeWidth: 0 }}
                 />
                 <Line
                   type="monotone"
                   dataKey="highRiskAvgPct"
                   name="High-Risk Avg (%)"
-                  stroke="#C93B3B"
+                  stroke="#D8315B"
                   strokeWidth={2}
                   strokeDasharray="4 3"
-                  dot={{ r: 3.5, fill: '#C93B3B', strokeWidth: 0 }}
+                  dot={{ r: 3.5, fill: '#D8315B', strokeWidth: 0 }}
                 />
               </LineChart>
             </ResponsiveContainer>
@@ -293,7 +294,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
                 style={{
                   width: `${(metrics.highRiskCount / metrics.totalStudents) * 100}%`,
                 }}
-                className="bg-status-danger-dot h-full"
+                className="bg-magenta h-full"
               />
               <div
                 style={{
@@ -305,7 +306,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
                 style={{
                   width: `${(metrics.lowRiskCount / metrics.totalStudents) * 100}%`,
                 }}
-                className="bg-status-success-dot h-full"
+                className="bg-bluebell h-full"
               />
             </div>
 
@@ -322,7 +323,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
                 }`}
               >
                 <span className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-status-danger-dot" />
+                  <span className="w-2 h-2 rounded-full bg-magenta" />
                   High Risk
                 </span>
                 <span className="font-mono tabular-nums">{metrics.highRiskCount}</span>
@@ -351,12 +352,12 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
                 onClick={() => setRiskFilter('ALL')}
                 className={`w-full flex items-center justify-between px-3 py-2 rounded-md border text-xs transition-colors ${
                   riskFilter === 'ALL'
-                    ? 'bg-forest-light border-forest-border text-forest font-semibold'
+                    ? 'bg-status-info-bg border-status-info-border text-imperial font-semibold'
                     : 'bg-surface border-stone-border text-ink-primary hover:bg-subtle/60'
                 }`}
               >
                 <span className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-status-success-dot" />
+                  <span className="w-2 h-2 rounded-full bg-bluebell" />
                   On Track (Low Risk)
                 </span>
                 <span className="font-mono tabular-nums">{metrics.lowRiskCount}</span>
@@ -406,7 +407,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
                   onClick={() => setRiskFilter(tab.id)}
                   className={`px-2.5 py-1 text-xs font-medium rounded transition-colors ${
                     riskFilter === tab.id
-                      ? 'bg-surface text-ink-primary shadow-card'
+                      ? 'bg-imperial text-ghost shadow-card'
                       : 'text-ink-secondary hover:text-ink-primary'
                   }`}
                 >
@@ -466,7 +467,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
                     className="hover:bg-subtle/50 transition-colors cursor-pointer group"
                   >
                     <td className="py-3 px-4">
-                      <div className="font-semibold text-ink-primary group-hover:text-forest transition-colors">
+                      <div className="font-semibold text-ink-primary group-hover:text-imperial transition-colors">
                         {item.student.fullName}
                       </div>
                       <div className="text-[11px] font-mono text-ink-muted">
@@ -541,7 +542,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
                           e.stopPropagation();
                           onSelectStudent(item.student.id);
                         }}
-                        className="inline-flex items-center gap-1 text-xs font-medium text-forest hover:text-forest-hover"
+                        className="inline-flex items-center gap-1 text-xs font-medium text-bluebell hover:text-imperial transition-colors"
                       >
                         <span>View</span>
                         <ArrowUpRight className="w-3.5 h-3.5" />
@@ -578,7 +579,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
           <button
             type="button"
             onClick={onNavigateInterventions}
-            className="text-xs font-medium text-forest hover:text-forest-hover inline-flex items-center gap-1"
+            className="text-xs font-medium text-bluebell hover:text-imperial inline-flex items-center gap-1 transition-colors"
           >
             <span>Manage All</span>
             <ArrowUpRight className="w-3.5 h-3.5" />
@@ -598,7 +599,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
                   <button
                     type="button"
                     onClick={() => onSelectStudent(intv.studentId)}
-                    className="font-semibold text-ink-primary hover:text-forest shrink-0"
+                    className="font-semibold text-ink-primary hover:text-imperial shrink-0 transition-colors"
                   >
                     {st?.fullName ?? intv.studentId}
                   </button>

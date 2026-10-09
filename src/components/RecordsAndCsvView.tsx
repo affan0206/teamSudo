@@ -169,7 +169,7 @@ export const RecordsAndCsvView: React.FC<RecordsAndCsvViewProps> = ({
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-stone-border pb-5">
         <div>
-          <div className="text-[11px] font-semibold uppercase tracking-wider text-forest mb-1">
+          <div className="text-[11px] font-semibold uppercase tracking-wider text-bluebell mb-1">
             Academic Data Ingestion
           </div>
           <h1 className="text-2xl font-semibold text-ink-primary tracking-tight">
@@ -268,7 +268,7 @@ export const RecordsAndCsvView: React.FC<RecordsAndCsvViewProps> = ({
                   <button
                     type="button"
                     onClick={() => onSelectStudent(currentEval.student.id)}
-                    className="inline-flex items-center gap-0.5 text-xs font-medium text-forest hover:text-forest-hover"
+                    className="inline-flex items-center gap-0.5 text-xs font-medium text-bluebell hover:text-imperial transition-colors"
                   >
                     Profile
                     <ArrowUpRight className="w-3.5 h-3.5" />
@@ -300,7 +300,7 @@ export const RecordsAndCsvView: React.FC<RecordsAndCsvViewProps> = ({
                 <span className="text-xs font-semibold uppercase tracking-wider text-ink-muted">
                   Attendance ({currentSubSummary?.subject.code})
                 </span>
-                <span className="text-xs font-mono font-semibold text-forest tabular-nums">
+                <span className="text-xs font-mono font-semibold text-imperial tabular-nums">
                   {Number(heldInput) > 0
                     ? `${Math.round((Number(attendedInput) / Number(heldInput)) * 1000) / 10}%`
                     : 'N/A'}
@@ -381,7 +381,7 @@ export const RecordsAndCsvView: React.FC<RecordsAndCsvViewProps> = ({
                               [item.assessment.id]: e.target.value,
                             })
                           }
-                          className="w-20 px-2.5 py-1.5 text-xs border border-stone-border rounded-md bg-surface text-right tabular-nums focus:outline-none focus:border-forest"
+                          className="w-20 px-2.5 py-1.5 text-xs border border-stone-border rounded-md bg-surface text-right tabular-nums focus:outline-none focus:border-bluebell"
                         />
                         <span className="w-14 text-right text-xs font-mono text-ink-secondary tabular-nums">
                           {normPct !== null ? `${normPct}%` : 'MISSING'}
@@ -417,7 +417,7 @@ export const RecordsAndCsvView: React.FC<RecordsAndCsvViewProps> = ({
           <div className="px-5 py-4 border-b border-stone-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <h2 className="text-base font-semibold text-ink-primary flex items-center gap-2">
-                <FileSpreadsheet className="w-4 h-4 text-forest" />
+                <FileSpreadsheet className="w-4 h-4 text-imperial" />
                 Batch CSV Import &amp; Validation Engine
               </h2>
               <p className="text-xs text-ink-secondary mt-0.5">
@@ -432,7 +432,7 @@ export const RecordsAndCsvView: React.FC<RecordsAndCsvViewProps> = ({
                   setCsvText(SAMPLE_VALID_CSV);
                   setCsvFeedback(null);
                 }}
-                className="px-2.5 py-1.5 text-xs font-medium text-forest bg-forest-light hover:bg-forest hover:text-white rounded-md border border-forest-border transition-colors"
+                className="px-2.5 py-1.5 text-xs font-medium text-imperial bg-bluebell-light hover:bg-imperial hover:text-ghost rounded-md border border-bluebell-border transition-colors"
               >
                 Load Valid Demo CSV
               </button>
@@ -456,7 +456,7 @@ export const RecordsAndCsvView: React.FC<RecordsAndCsvViewProps> = ({
                 Upload a local <code className="font-mono text-ink-primary">.csv</code> file or edit the raw CSV payload directly below.
               </div>
               <label className="btn-secondary text-xs py-1.5 cursor-pointer">
-                <Upload className="w-3.5 h-3.5 text-forest" />
+                <Upload className="w-3.5 h-3.5 text-bluebell" />
                 <span>Choose .CSV File</span>
                 <input
                   type="file"
@@ -480,7 +480,7 @@ export const RecordsAndCsvView: React.FC<RecordsAndCsvViewProps> = ({
                   setCsvFeedback(null);
                 }}
                 spellCheck={false}
-                className="w-full p-3 text-xs font-mono bg-subtle/40 border border-stone-border rounded-lg text-ink-primary focus:outline-none focus:border-forest leading-relaxed"
+                className="w-full p-3 text-xs font-mono bg-subtle/40 border border-stone-border rounded-lg text-ink-primary focus:outline-none focus:border-bluebell leading-relaxed"
               />
             </div>
 

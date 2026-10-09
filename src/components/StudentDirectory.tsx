@@ -170,7 +170,7 @@ export const StudentDirectory: React.FC<StudentDirectoryProps> = ({
                 onClick={() => setRiskFilter(tab.id)}
                 className={`px-2.5 py-1 rounded font-medium transition-colors ${
                   riskFilter === tab.id
-                    ? 'bg-surface text-ink-primary shadow-card'
+                    ? 'bg-imperial text-ghost shadow-card'
                     : 'text-ink-secondary hover:text-ink-primary'
                 }`}
               >
@@ -293,7 +293,7 @@ export const StudentDirectory: React.FC<StudentDirectoryProps> = ({
                     </td>
 
                     <td className="py-3 px-4 whitespace-nowrap">
-                      <div className="font-semibold text-ink-primary group-hover:text-forest transition-colors">
+                      <div className="font-semibold text-ink-primary group-hover:text-imperial transition-colors">
                         {item.student.fullName}
                       </div>
                       <div className="text-[11px] text-ink-muted">
@@ -380,7 +380,7 @@ export const StudentDirectory: React.FC<StudentDirectoryProps> = ({
                           e.stopPropagation();
                           onSelectStudent(item.student.id);
                         }}
-                        className="inline-flex items-center gap-1 text-xs font-medium text-forest hover:text-forest-hover"
+                        className="inline-flex items-center gap-1 text-xs font-medium text-bluebell hover:text-imperial transition-colors"
                       >
                         <span>View</span>
                         <ArrowUpRight className="w-3.5 h-3.5" />

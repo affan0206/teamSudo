@@ -46,15 +46,15 @@ export const RiskThresholdsModal: React.FC<RiskThresholdsModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink-primary/40 backdrop-blur-[1px] p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-carbon/40 backdrop-blur-[1px] p-4">
       <div className="bg-surface border border-stone-border rounded-xl shadow-elevated max-w-lg w-full overflow-hidden">
         <div className="flex items-center justify-between px-5 py-4 border-b border-stone-border bg-subtle/50">
           <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-md bg-forest-light border border-forest-border flex items-center justify-center text-forest">
+            <div className="w-7 h-7 rounded-md bg-bluebell-light border border-bluebell-border flex items-center justify-center text-imperial">
               <SlidersHorizontal className="w-3.5 h-3.5" />
             </div>
             <div>
-              <h2 className="text-base font-semibold text-ink-primary">
+              <h2 className="text-base font-semibold text-imperial">
                 Academic Risk Engine Rules &amp; Thresholds
               </h2>
               <p className="text-xs text-ink-secondary">
@@ -65,7 +65,7 @@ export const RiskThresholdsModal: React.FC<RiskThresholdsModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="text-ink-muted hover:text-ink-primary p-1.5 rounded-md hover:bg-subtle transition-colors"
+            className="text-ink-muted hover:text-imperial p-1.5 rounded-md hover:bg-subtle transition-colors"
             aria-label="Close modal"
           >
             <X className="w-4 h-4" />
@@ -73,10 +73,10 @@ export const RiskThresholdsModal: React.FC<RiskThresholdsModalProps> = ({
         </div>
 
         <form onSubmit={handleApply} className="p-5 space-y-4">
-          <div className="flex items-start gap-2.5 p-3.5 rounded-lg bg-forest-light/60 border border-forest-border text-xs text-ink-secondary leading-relaxed">
-            <Info className="w-4 h-4 text-forest shrink-0 mt-0.5" />
+          <div className="flex items-start gap-2.5 p-3.5 rounded-lg bg-status-info-bg border border-status-info-border text-xs text-ink-secondary leading-relaxed">
+            <Info className="w-4 h-4 text-bluebell shrink-0 mt-0.5" />
             <div>
-              <strong className="text-ink-primary">Explainable Rules-Based Model:</strong> Thresholds
+              <strong className="text-imperial">Explainable Rules-Based Model:</strong> Thresholds
               below govern how students are classified into High, Medium, or Low Risk. Adjusting these
               parameters recalculates all cohort metrics and recommendations immediately.
             </div>
@@ -214,7 +214,7 @@ export const RiskThresholdsModal: React.FC<RiskThresholdsModalProps> = ({
               onClick={handleReset}
               className="btn-secondary text-xs py-1.5"
             >
-              <RotateCcw className="w-3.5 h-3.5" />
+              <RotateCcw className="w-3.5 h-3.5 text-bluebell" />
               Restore Defaults
             </button>
             <div className="flex items-center gap-2">

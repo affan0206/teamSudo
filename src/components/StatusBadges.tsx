@@ -1,5 +1,13 @@
 import React from 'react';
-import { TrendingDown, TrendingUp, Minus } from 'lucide-react';
+import {
+  AlertTriangle,
+  CheckCircle2,
+  Clock,
+  HelpCircle,
+  Minus,
+  TrendingDown,
+  TrendingUp,
+} from 'lucide-react';
 import { InterventionStatus, RiskLevel } from '../types/academic';
 
 export const RiskBadge: React.FC<{
@@ -22,6 +30,7 @@ export const RiskBadge: React.FC<{
       text: string;
       border: string;
       dot: string;
+      Icon: React.FC<{ className?: string }>;
     }
   > = {
     HIGH: {
@@ -30,6 +39,7 @@ export const RiskBadge: React.FC<{
       text: 'text-status-danger-text',
       border: 'border-status-danger-border',
       dot: 'bg-status-danger-dot',
+      Icon: AlertTriangle,
     },
     MEDIUM: {
       label: 'Medium Risk',
@@ -37,6 +47,7 @@ export const RiskBadge: React.FC<{
       text: 'text-status-warning-text',
       border: 'border-status-warning-border',
       dot: 'bg-status-warning-dot',
+      Icon: Clock,
     },
     LOW: {
       label: 'Low Risk',
@@ -44,6 +55,7 @@ export const RiskBadge: React.FC<{
       text: 'text-status-success-text',
       border: 'border-status-success-border',
       dot: 'bg-status-success-dot',
+      Icon: CheckCircle2,
     },
     INSUFFICIENT_DATA: {
       label: 'Insufficient Data',
@@ -51,17 +63,19 @@ export const RiskBadge: React.FC<{
       text: 'text-status-neutral-text',
       border: 'border-status-neutral-border border-dashed',
       dot: 'bg-status-neutral-dot',
+      Icon: HelpCircle,
     },
   };
 
   const current = config[level];
+  const BadgeIcon = current.Icon;
 
   return (
     <div className="inline-flex items-center gap-1.5 flex-wrap">
       <span
         className={`inline-flex items-center gap-1.5 font-medium rounded-md border ${current.bg} ${current.text} ${current.border} ${sizeClasses}`}
       >
-        <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${current.dot}`} />
+        <BadgeIcon className="w-3 h-3 shrink-0" />
         <span>{current.label}</span>
       </span>
       {showIncompleteTag && level !== 'INSUFFICIENT_DATA' && (
@@ -76,24 +90,28 @@ export const RiskBadge: React.FC<{
   );
 };
 
-export const InterventionStatusBadge: React.FC<{ status: InterventionStatus }> = ({ status }) => {
+export const InterventionStatusBadge: React.FC<{ status: InterventionStatus }> = ({
+  status,
+}) => {
   const styles: Record<
     InterventionStatus,
     { label: string; classes: string; dot: string }
   > = {
     PLANNED: {
       label: 'Planned',
-      classes: 'bg-status-warning-bg text-status-warning-text border-status-warning-border',
+      classes:
+        'bg-status-warning-bg text-status-warning-text border-status-warning-border',
       dot: 'bg-status-warning-dot',
     },
     IN_PROGRESS: {
       label: 'In Progress',
-      classes: 'bg-forest-subtle text-forest border-forest-border',
-      dot: 'bg-forest',
+      classes: 'bg-status-info-bg text-status-info-text border-status-info-border',
+      dot: 'bg-status-info-dot',
     },
     COMPLETED: {
       label: 'Completed',
-      classes: 'bg-status-success-bg text-status-success-text border-status-success-border',
+      classes:
+        'bg-status-success-bg text-status-success-text border-status-success-border',
       dot: 'bg-status-success-dot',
     },
   };
@@ -118,7 +136,7 @@ export const TrendDeltaPill: React.FC<{ delta: number | null }> = ({ delta }) =>
   if (delta <= -15) {
     return (
       <span className="inline-flex items-center gap-1 text-[11px] font-medium text-status-danger-text bg-status-danger-bg border border-status-danger-border px-2 py-0.5 rounded-md tabular-nums">
-        <TrendingDown className="w-3 h-3 shrink-0" />
+        <TrendingDown className="w-3 h-3 text-magenta shrink-0" />
         {delta > 0 ? `+${delta}` : delta} pts
       </span>
     );
@@ -135,8 +153,8 @@ export const TrendDeltaPill: React.FC<{ delta: number | null }> = ({ delta }) =>
 
   if (delta >= 5) {
     return (
-      <span className="inline-flex items-center gap-1 text-[11px] font-medium text-status-success-text bg-status-success-bg border border-status-success-border px-2 py-0.5 rounded-md tabular-nums">
-        <TrendingUp className="w-3 h-3 shrink-0" />+{delta} pts
+      <span className="inline-flex items-center gap-1 text-[11px] font-medium text-status-info-text bg-status-info-bg border border-status-info-border px-2 py-0.5 rounded-md tabular-nums">
+        <TrendingUp className="w-3 h-3 text-bluebell shrink-0" />+{delta} pts
       </span>
     );
   }

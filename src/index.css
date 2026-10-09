@@ -2,6 +2,36 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  /* Core Approved Palette Tokens */
+  --color-primary: #0A2463;
+  --color-primary-hover: #071A4A;
+  --color-primary-light: #EEF2FA;
+  --color-primary-border: #C5D3EE;
+
+  --color-secondary: #3E92CC;
+  --color-secondary-hover: #2E7BB3;
+  --color-secondary-light: #EBF4FA;
+  --color-secondary-border: #B8D9F0;
+
+  --color-background: #FFFAFF;
+  --color-surface: #FFFFFF;
+  --color-surface-subtle: #F6F4F8;
+  --color-border: #E5E2E7;
+  --color-border-strong: #CFCBD4;
+
+  --color-danger: #D8315B;
+  --color-danger-bg: #FDF2F5;
+  --color-danger-text: #B42046;
+  --color-danger-border: #F5C6D3;
+
+  --color-text: #1E1B18;
+  --color-text-secondary: #57534E;
+  --color-text-muted: #78736E;
+
+  --color-focus-ring: #3E92CC;
+}
+
 @layer base {
   html {
     -webkit-font-smoothing: antialiased;
@@ -10,8 +40,8 @@
   }
 
   body {
-    background-color: #F7F7F2;
-    color: #202522;
+    background-color: var(--color-background);
+    color: var(--color-text);
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     line-height: 1.5;
   }
@@ -21,53 +51,86 @@
     font-variant-numeric: tabular-nums;
   }
 
-  /* Accessible keyboard focus ring */
+  /* Accessible keyboard focus ring using Blue Bell (#3E92CC) */
   *:focus-visible {
-    outline: 2px solid #285C46;
+    outline: 2px solid var(--color-focus-ring);
     outline-offset: 2px;
   }
 }
 
 @layer utilities {
   .shadow-card {
-    box-shadow: 0 1px 2px 0 rgba(32, 37, 34, 0.04);
+    box-shadow: 0 1px 2px 0 rgba(10, 36, 99, 0.04);
   }
 
   .shadow-elevated {
-    box-shadow: 0 8px 24px -4px rgba(32, 37, 34, 0.08), 0 2px 6px -1px rgba(32, 37, 34, 0.04);
+    box-shadow: 0 8px 24px -4px rgba(10, 36, 99, 0.10), 0 2px 6px -1px rgba(30, 27, 24, 0.05);
   }
 }
 
 @layer components {
+  /* Primary button: Imperial Blue (#0A2463) with Ghost White (#FFFAFF) text */
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 px-3.5 py-2 text-xs font-medium text-white bg-forest hover:bg-forest-hover rounded-md transition-colors disabled:opacity-45 disabled:pointer-events-none;
-    box-shadow: 0 1px 2px 0 rgba(32, 37, 34, 0.04);
+    @apply inline-flex items-center justify-center gap-2 px-3.5 py-2 text-xs font-medium rounded-md transition-colors disabled:opacity-45 disabled:pointer-events-none;
+    background-color: var(--color-primary);
+    color: var(--color-background);
+    box-shadow: 0 1px 2px 0 rgba(10, 36, 99, 0.06);
   }
 
+  .btn-primary:hover {
+    background-color: var(--color-primary-hover);
+  }
+
+  /* Secondary button: White surface with subtle border and Blue Bell hover accent */
   .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 px-3.5 py-2 text-xs font-medium text-ink-primary bg-surface border border-stone-border rounded-md transition-colors disabled:opacity-45 disabled:pointer-events-none;
-    box-shadow: 0 1px 2px 0 rgba(32, 37, 34, 0.04);
+    @apply inline-flex items-center justify-center gap-2 px-3.5 py-2 text-xs font-medium rounded-md transition-colors disabled:opacity-45 disabled:pointer-events-none;
+    background-color: var(--color-surface);
+    color: var(--color-primary);
+    border: 1px solid var(--color-border);
+    box-shadow: 0 1px 2px 0 rgba(10, 36, 99, 0.03);
   }
 
   .btn-secondary:hover {
-    background-color: #F2F3EE;
+    background-color: var(--color-secondary-light);
+    border-color: var(--color-secondary-border);
+    color: var(--color-primary);
   }
 
+  /* Tertiary button */
   .btn-tertiary {
-    @apply inline-flex items-center justify-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-ink-secondary hover:text-ink-primary rounded-md transition-colors;
+    @apply inline-flex items-center justify-center gap-1.5 px-2.5 py-1.5 text-xs font-medium rounded-md transition-colors;
+    color: var(--color-text-secondary);
   }
 
   .btn-tertiary:hover {
-    background-color: #F2F3EE;
+    background-color: var(--color-surface-subtle);
+    color: var(--color-primary);
   }
 
+  /* Form input field with Blue Bell focus border */
   .input-field {
-    @apply w-full px-3 py-2 text-xs text-ink-primary bg-surface border border-stone-border rounded-md placeholder:text-ink-muted focus:outline-none focus:border-forest transition-colors;
+    @apply w-full px-3 py-2 text-xs rounded-md transition-colors;
+    color: var(--color-text);
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
   }
 
+  .input-field::placeholder {
+    color: var(--color-text-muted);
+  }
+
+  .input-field:focus {
+    outline: none;
+    border-color: var(--color-secondary);
+    box-shadow: 0 0 0 2px rgba(62, 146, 204, 0.18);
+  }
+
+  /* Surface card */
   .card-surface {
-    @apply bg-surface border border-stone-border rounded-lg;
-    box-shadow: 0 1px 2px 0 rgba(32, 37, 34, 0.04);
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 2px 0 rgba(10, 36, 99, 0.04);
   }
 }
 
@@ -78,14 +141,14 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: #F2F3EE;
+  background: #F6F4F8;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #CFD3CA;
+  background: #CFCBD4;
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #9FA59B;
+  background: #3E92CC;
 }

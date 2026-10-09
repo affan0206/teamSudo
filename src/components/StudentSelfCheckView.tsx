@@ -178,10 +178,17 @@ export const StudentSelfCheckView: React.FC<StudentSelfCheckViewProps> = ({
         aria-label="Student Summary Metrics"
         className="grid grid-cols-1 sm:grid-cols-3 gap-4"
       >
-        <div className="card-surface p-4">
+        <div className="card-surface p-4 border-t-2 border-t-imperial">
           <div className="text-xs font-medium text-ink-secondary">Academic Score</div>
           <div className="flex items-baseline justify-between mt-1">
-            <span className="text-2xl font-semibold text-ink-primary tabular-nums">
+            <span
+              className={`text-2xl font-semibold tabular-nums ${
+                evaluation.overallScorePercentage !== null &&
+                evaluation.overallScorePercentage < thresholds.passingScorePct
+                  ? 'text-magenta'
+                  : 'text-ink-primary'
+              }`}
+            >
               {evaluation.overallScorePercentage !== null
                 ? `${evaluation.overallScorePercentage}%`
                 : 'N/A'}
@@ -193,9 +200,16 @@ export const StudentSelfCheckView: React.FC<StudentSelfCheckViewProps> = ({
           </div>
         </div>
 
-        <div className="card-surface p-4">
+        <div className="card-surface p-4 border-t-2 border-t-bluebell">
           <div className="text-xs font-medium text-ink-secondary">Attendance</div>
-          <div className="text-2xl font-semibold text-ink-primary tabular-nums mt-1">
+          <div
+            className={`text-2xl font-semibold tabular-nums mt-1 ${
+              evaluation.overallAttendancePercentage !== null &&
+              evaluation.overallAttendancePercentage < thresholds.criticalAttendancePct
+                ? 'text-magenta'
+                : 'text-ink-primary'
+            }`}
+          >
             {evaluation.overallAttendancePercentage !== null
               ? `${evaluation.overallAttendancePercentage}%`
               : 'N/A'}
@@ -206,11 +220,19 @@ export const StudentSelfCheckView: React.FC<StudentSelfCheckViewProps> = ({
           </div>
         </div>
 
-        <div className="card-surface p-4">
+        <div
+          className={`card-surface p-4 border-t-2 ${
+            subjectsNeedingAttention > 0 ? 'border-t-magenta' : 'border-t-bluebell'
+          }`}
+        >
           <div className="text-xs font-medium text-ink-secondary">
             Subjects Needing Attention
           </div>
-          <div className="text-2xl font-semibold text-ink-primary tabular-nums mt-1">
+          <div
+            className={`text-2xl font-semibold tabular-nums mt-1 ${
+              subjectsNeedingAttention > 0 ? 'text-magenta' : 'text-ink-primary'
+            }`}
+          >
             {subjectsNeedingAttention}{' '}
             <span className="text-sm font-normal text-ink-muted">
               of {evaluation.subjectSummaries.length}
@@ -264,7 +286,7 @@ export const StudentSelfCheckView: React.FC<StudentSelfCheckViewProps> = ({
                     <button
                       type="button"
                       onClick={() => toggleWarning(ev.id)}
-                      className="inline-flex items-center gap-1 text-xs font-medium text-forest hover:text-forest-hover shrink-0"
+                      className="inline-flex items-center gap-1 text-xs font-medium text-bluebell hover:text-imperial shrink-0 transition-colors"
                     >
                       <span>{isExpanded ? 'Hide details' : 'View details'}</span>
                       {isExpanded ? (
@@ -311,10 +333,10 @@ export const StudentSelfCheckView: React.FC<StudentSelfCheckViewProps> = ({
               {evaluation.subjectSummaries.map((sub) => {
                 const isExpanded = Boolean(expandedSubjectIds[sub.subject.id]);
                 const scoreBarColor = sub.isFailingScore
-                  ? 'bg-status-danger-dot'
+                  ? 'bg-magenta'
                   : sub.isBorderlineScore
                   ? 'bg-status-warning-dot'
-                  : 'bg-forest';
+                  : 'bg-bluebell';
 
                 return (
                   <React.Fragment key={sub.subject.id}>
@@ -398,7 +420,7 @@ export const StudentSelfCheckView: React.FC<StudentSelfCheckViewProps> = ({
                         <button
                           type="button"
                           onClick={() => toggleSubject(sub.subject.id)}
-                          className="inline-flex items-center gap-1 text-xs font-medium text-forest hover:text-forest-hover"
+                          className="inline-flex items-center gap-1 text-xs font-medium text-bluebell hover:text-imperial transition-colors"
                         >
                           <span>{isExpanded ? 'Hide' : 'Assessments'}</span>
                           {isExpanded ? (
@@ -472,7 +494,7 @@ export const StudentSelfCheckView: React.FC<StudentSelfCheckViewProps> = ({
               <div key={rec.id} className="px-4 py-3 text-xs">
                 <div className="flex items-center justify-between gap-4">
                   <div className="flex items-center gap-2.5 min-w-0">
-                    <span className="w-5 h-5 rounded-full bg-subtle border border-stone-border flex items-center justify-center font-mono text-[11px] font-semibold text-ink-secondary shrink-0">
+                    <span className="w-5 h-5 rounded-full bg-imperial-light border border-imperial-border flex items-center justify-center font-mono text-[11px] font-semibold text-imperial shrink-0">
                       {index + 1}
                     </span>
                     <div className="min-w-0">
@@ -490,7 +512,7 @@ export const StudentSelfCheckView: React.FC<StudentSelfCheckViewProps> = ({
                   <button
                     type="button"
                     onClick={() => toggleRecommendation(rec.id)}
-                    className="inline-flex items-center gap-1 text-xs font-medium text-forest hover:text-forest-hover shrink-0"
+                    className="inline-flex items-center gap-1 text-xs font-medium text-bluebell hover:text-imperial shrink-0 transition-colors"
                   >
                     <span>{isExpanded ? 'Hide details' : 'View details'}</span>
                     {isExpanded ? (
@@ -502,7 +524,7 @@ export const StudentSelfCheckView: React.FC<StudentSelfCheckViewProps> = ({
                 </div>
 
                 {isExpanded && (
-                  <div className="mt-2.5 ml-7 pl-3 border-l-2 border-forest-border space-y-1.5 text-xs text-ink-secondary">
+                  <div className="mt-2.5 ml-7 pl-3 border-l-2 border-bluebell-border space-y-1.5 text-xs text-ink-secondary">
                     <p className="leading-relaxed text-ink-primary">
                       {rec.studentGuidance}
                     </p>

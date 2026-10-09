@@ -265,8 +265,6 @@ export function App() {
     [dataset, thresholds]
   );
 
-  // Strict student-record resolution:
-  // If role === 'STUDENT', strictly lock to currentUser.studentId
   const selectedEvaluation = useMemo(() => {
     if (!currentUser || evaluations.length === 0) return undefined;
     if (currentUser.role === 'STUDENT') {
@@ -428,7 +426,7 @@ export function App() {
     return (
       <div className="min-h-screen bg-canvas flex items-center justify-center p-6">
         <div className="flex items-center gap-2.5 text-xs font-medium text-ink-secondary">
-          <Loader2 className="w-4 h-4 text-forest animate-spin" />
+          <Loader2 className="w-4 h-4 text-imperial animate-spin" />
           <span>Verifying session...</span>
         </div>
       </div>
@@ -448,7 +446,7 @@ export function App() {
     return (
       <div className="min-h-screen bg-canvas flex items-center justify-center p-6">
         <div className="flex items-center gap-2.5 text-xs font-medium text-ink-secondary">
-          <Loader2 className="w-4 h-4 text-forest animate-spin" />
+          <Loader2 className="w-4 h-4 text-imperial animate-spin" />
           <span>Loading authorized academic records...</span>
         </div>
       </div>
@@ -500,11 +498,11 @@ export function App() {
         {/* Brand Header */}
         <div className="px-5 pt-5 pb-4 border-b border-stone-border flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-md bg-forest flex items-center justify-center text-white shrink-0">
+            <div className="w-7 h-7 rounded-md bg-imperial flex items-center justify-center text-ghost shrink-0 shadow-card">
               <BookOpenCheck className="w-4 h-4" />
             </div>
             <div>
-              <div className="text-sm font-semibold tracking-tight text-ink-primary">
+              <div className="text-sm font-semibold tracking-tight text-imperial">
                 Academic Insight
               </div>
               <div className="text-[11px] text-ink-muted">
@@ -526,7 +524,7 @@ export function App() {
         {/* Navigation Links (Role-Enforced) */}
         {currentUser.role === 'FACULTY' ? (
           <div className="px-3">
-            <nav aria-label="Faculty Navigation" className="space-y-0.5">
+            <nav aria-label="Faculty Navigation" className="space-y-1">
               {facultyNavItems.map(({ id, label, Icon, badge }) => {
                 const isActive = activeTab === id;
                 return (
@@ -536,14 +534,14 @@ export function App() {
                     onClick={() => handleSelectNavTab(id)}
                     className={`w-full flex items-center justify-between px-3 py-2 text-xs font-medium rounded-md transition-colors ${
                       isActive
-                        ? 'bg-forest-light text-forest font-semibold'
-                        : 'text-ink-secondary hover:text-ink-primary hover:bg-subtle'
+                        ? 'bg-imperial text-ghost font-semibold shadow-card'
+                        : 'text-ink-secondary hover:text-imperial hover:bg-bluebell-light/70'
                     }`}
                   >
                     <span className="flex items-center gap-2.5 truncate">
                       <Icon
                         className={`w-4 h-4 shrink-0 ${
-                          isActive ? 'text-forest' : 'text-ink-muted'
+                          isActive ? 'text-bluebell-border' : 'text-ink-muted'
                         }`}
                       />
                       <span className="truncate">{label}</span>
@@ -552,8 +550,8 @@ export function App() {
                       <span
                         className={`ml-2 text-[11px] font-mono tabular-nums px-1.5 py-0.5 rounded ${
                           isActive
-                            ? 'bg-surface text-forest font-semibold'
-                            : 'text-ink-muted bg-subtle'
+                            ? 'bg-white/15 text-ghost font-semibold'
+                            : 'text-imperial bg-bluebell-light border border-bluebell-border/60'
                         }`}
                       >
                         {badge}
@@ -566,9 +564,9 @@ export function App() {
           </div>
         ) : (
           <div className="px-3">
-            <nav aria-label="Student Navigation" className="space-y-0.5">
-              <div className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-md bg-forest-light text-forest">
-                <GraduationCap className="w-4 h-4 shrink-0 text-forest" />
+            <nav aria-label="Student Navigation" className="space-y-1">
+              <div className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-md bg-imperial text-ghost shadow-card">
+                <GraduationCap className="w-4 h-4 shrink-0 text-bluebell-border" />
                 <span>My Academic Standing</span>
               </div>
             </nav>
@@ -586,19 +584,19 @@ export function App() {
                 setIsThresholdsModalOpen(true);
                 setMobileMenuOpen(false);
               }}
-              className="inline-flex items-center gap-1.5 text-xs font-medium text-ink-secondary hover:text-ink-primary"
+              className="inline-flex items-center gap-1.5 text-xs font-medium text-ink-secondary hover:text-imperial transition-colors"
             >
-              <SlidersHorizontal className="w-3.5 h-3.5 text-forest" />
+              <SlidersHorizontal className="w-3.5 h-3.5 text-bluebell" />
               <span>Risk Rules</span>
             </button>
 
             <button
               type="button"
               onClick={handleResetDemoData}
-              className="inline-flex items-center gap-1 text-xs font-medium text-ink-secondary hover:text-ink-primary"
+              className="inline-flex items-center gap-1 text-xs font-medium text-ink-secondary hover:text-imperial transition-colors"
               title="Reset cohort records to initial baseline (Faculty only)"
             >
-              <RotateCcw className="w-3 h-3" />
+              <RotateCcw className="w-3 h-3 text-bluebell" />
               <span>Reset Demo</span>
             </button>
           </div>
@@ -614,7 +612,7 @@ export function App() {
                 {currentUser.email}
               </div>
             </div>
-            <span className="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded bg-subtle border border-stone-border text-ink-secondary shrink-0">
+            <span className="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded bg-bluebell-light border border-bluebell-border text-imperial shrink-0">
               {currentUser.role}
             </span>
           </div>
@@ -624,7 +622,7 @@ export function App() {
             onClick={handleLogout}
             className="w-full btn-secondary py-1.5 text-xs justify-center"
           >
-            <LogOut className="w-3.5 h-3.5 text-ink-muted" />
+            <LogOut className="w-3.5 h-3.5 text-bluebell" />
             <span>Sign out</span>
           </button>
         </div>
@@ -645,16 +643,16 @@ export function App() {
           <button
             type="button"
             onClick={() => setMobileMenuOpen(true)}
-            className="p-1.5 -ml-1 text-ink-secondary hover:text-ink-primary rounded-md border border-stone-border bg-canvas"
+            className="p-1.5 -ml-1 text-ink-secondary hover:text-imperial rounded-md border border-stone-border bg-canvas"
             aria-label="Open navigation menu"
           >
             <Menu className="w-4 h-4" />
           </button>
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded bg-forest flex items-center justify-center text-white">
+            <div className="w-6 h-6 rounded bg-imperial flex items-center justify-center text-ghost">
               <BookOpenCheck className="w-3.5 h-3.5" />
             </div>
-            <span className="text-sm font-semibold text-ink-primary">
+            <span className="text-sm font-semibold text-imperial">
               Academic Insight
             </span>
           </div>
@@ -663,9 +661,9 @@ export function App() {
         <button
           type="button"
           onClick={handleLogout}
-          className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded border border-stone-border bg-canvas text-ink-secondary hover:text-ink-primary"
+          className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded border border-stone-border bg-canvas text-ink-secondary hover:text-imperial"
         >
-          <LogOut className="w-3.5 h-3.5" />
+          <LogOut className="w-3.5 h-3.5 text-bluebell" />
           <span>Sign out</span>
         </button>
       </header>
@@ -674,7 +672,7 @@ export function App() {
       {mobileMenuOpen && (
         <div className="fixed inset-0 z-50 lg:hidden flex">
           <div
-            className="fixed inset-0 bg-black/30"
+            className="fixed inset-0 bg-carbon/35"
             onClick={() => setMobileMenuOpen(false)}
           />
           <div className="relative w-60 max-w-[80vw] bg-surface h-full shadow-elevated z-10">
@@ -685,8 +683,8 @@ export function App() {
 
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-5 right-5 z-50 bg-ink-primary text-white px-4 py-2.5 rounded-md shadow-elevated text-xs font-medium flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-forest-border" />
+        <div className="fixed bottom-5 right-5 z-50 bg-imperial text-ghost px-4 py-2.5 rounded-md shadow-elevated text-xs font-medium flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-bluebell" />
           <span>{toastMessage}</span>
         </div>
       )}
@@ -702,7 +700,7 @@ export function App() {
               />
             ) : (
               <div className="card-surface p-6 text-xs text-ink-secondary flex items-center gap-2">
-                <ShieldAlert className="w-4 h-4 text-status-danger-dot" />
+                <ShieldAlert className="w-4 h-4 text-magenta" />
                 <span>No student academic profile is bound to this account.</span>
               </div>
             )

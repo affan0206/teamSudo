@@ -94,15 +94,15 @@ export const LoginPage: React.FC<LoginPageProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-canvas text-ink-primary flex flex-col justify-center items-center px-4 py-12">
+    <div className="min-h-screen bg-ghost text-ink-primary flex flex-col justify-center items-center px-4 py-12">
       <div className="w-full max-w-[380px] space-y-6">
         {/* Compact Brand Header */}
         <div className="flex flex-col items-center text-center space-y-2.5">
-          <div className="w-10 h-10 rounded-lg bg-forest flex items-center justify-center text-white shadow-card">
+          <div className="w-10 h-10 rounded-lg bg-imperial flex items-center justify-center text-ghost shadow-card border border-imperial-border/40">
             <BookOpenCheck className="w-5 h-5" />
           </div>
           <div>
-            <div className="text-xs font-semibold uppercase tracking-wider text-forest">
+            <div className="text-xs font-semibold uppercase tracking-wider text-imperial">
               Academic Insight
             </div>
             <h1 className="text-xl font-semibold text-ink-primary tracking-tight mt-0.5">
@@ -119,13 +119,13 @@ export const LoginPage: React.FC<LoginPageProps> = ({
         </div>
 
         {/* Sign-In / Password Reset Card */}
-        <div className="card-surface p-6">
+        <div className="card-surface p-6 border-t-2 border-t-imperial">
           {errorMessage && (
             <div
               role="alert"
               className="mb-4 p-3 rounded-md bg-status-danger-bg border border-status-danger-border text-xs text-status-danger-text flex items-start gap-2"
             >
-              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+              <AlertCircle className="w-4 h-4 text-magenta shrink-0 mt-0.5" />
               <span>{errorMessage}</span>
             </div>
           )}
@@ -133,9 +133,9 @@ export const LoginPage: React.FC<LoginPageProps> = ({
           {resetNotice && (
             <div
               role="status"
-              className="mb-4 p-3 rounded-md bg-status-success-bg border border-status-success-border text-xs text-status-success-text flex items-start gap-2"
+              className="mb-4 p-3 rounded-md bg-status-info-bg border border-status-info-border text-xs text-status-info-text flex items-start gap-2"
             >
-              <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" />
+              <CheckCircle2 className="w-4 h-4 text-bluebell shrink-0 mt-0.5" />
               <span>{resetNotice}</span>
             </div>
           )}
@@ -177,7 +177,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                       setErrorMessage(null);
                       setResetNotice(null);
                     }}
-                    className="text-xs font-medium text-forest hover:text-forest-hover"
+                    className="text-xs font-medium text-imperial hover:text-bluebell transition-colors"
                   >
                     Forgot password?
                   </button>
@@ -198,7 +198,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                   <button
                     type="button"
                     onClick={() => setShowPassword((prev) => !prev)}
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-ink-muted hover:text-ink-primary p-0.5 rounded"
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-ink-muted hover:text-imperial p-0.5 rounded"
                     aria-label={showPassword ? 'Hide password' : 'Show password'}
                   >
                     {showPassword ? (
@@ -269,7 +269,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                   setErrorMessage(null);
                   setResetNotice(null);
                 }}
-                className="w-full inline-flex items-center justify-center gap-1.5 text-xs font-medium text-ink-secondary hover:text-ink-primary pt-1"
+                className="w-full inline-flex items-center justify-center gap-1.5 text-xs font-medium text-ink-secondary hover:text-imperial pt-1"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
                 Back to sign in
@@ -280,7 +280,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
 
         {/* Minimal Security Footer */}
         <div className="flex items-center justify-center gap-1.5 text-[11px] text-ink-muted">
-          <Lock className="w-3 h-3" />
+          <Lock className="w-3 h-3 text-bluebell" />
           <span>Role-based access control · Authorized academic accounts only</span>
         </div>
       </div>
