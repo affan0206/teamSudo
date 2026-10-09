@@ -1,0 +1,59 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>
+endobj
+4 0 obj
+<< /Length 843 >>
+stream
+BT
+/F1 16 Tf
+50 750 Td
+(Control Systems Study Notes \(EE302\)) Tj
+/F1 10 Tf
+0 -20 Td
+(Academic Insight - Public Sample Revision Summary) Tj
+0 -24 Td
+/F1 11 Tf
+(Module 1: Closed-Loop Transfer Functions & Block Diagrams) Tj
+0 -16 Td
+(- Negative feedback transfer function: T\(s\) = G\(s\) / \(1 + G\(s\) H\(s\)\)) Tj
+0 -16 Td
+(- Characteristic equation: 1 + G\(s\) H\(s\) = 0 governs closed-loop poles) Tj
+0 -16 Td
+() Tj
+0 -16 Td
+(Module 2: Second-Order Transient Response & Routh-Hurwitz) Tj
+0 -16 Td
+(- Standard 2nd-order form: T\(s\) = omega_n^2 / \(s^2 + 2*zeta*omega_n*s + omega_n^2\)) Tj
+0 -16 Td
+(- Settling time \(2%\): t_s = 4 / \(zeta * omega_n\)) Tj
+0 -16 Td
+(- Routh-Hurwitz: First-column sign changes equal right-half plane poles.) Tj
+0 -16 Td
+(- Note: Sample educational revision sheet provided by Academic Insight.) Tj
+0 -16 Td
+ET
+endstream
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000241 00000 n 
+0000001135 00000 n 
+trailer
+<< /Size 6 /Root 1 0 R >>
+startxref
+1205
+%%EOF

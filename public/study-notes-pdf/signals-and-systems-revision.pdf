@@ -1,0 +1,59 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>
+endobj
+4 0 obj
+<< /Length 832 >>
+stream
+BT
+/F1 16 Tf
+50 750 Td
+(Signals and Systems Study Notes \(EC301\)) Tj
+/F1 10 Tf
+0 -20 Td
+(Academic Insight - Public Sample Revision Summary) Tj
+0 -24 Td
+/F1 11 Tf
+(Module 1: LTI Systems & Convolution) Tj
+0 -16 Td
+(- Continuous convolution: y\(t\) = integral x\(tau\) h\(t - tau\) dtau) Tj
+0 -16 Td
+(- Discrete convolution: y[n] = sum x[k] h[n - k], length = N1 + N2 - 1) Tj
+0 -16 Td
+(- Causal LTI: h\(t\) = 0 for t < 0; BIBO stable: integral |h\(t\)| dt < infinity) Tj
+0 -16 Td
+() Tj
+0 -16 Td
+(Module 2: Fourier, Laplace & Nyquist Sampling) Tj
+0 -16 Td
+(- Convolution in time <-> Multiplication in frequency: Y\(j*omega\) = X\(j*omega\) H\(j*omega\)) Tj
+0 -16 Td
+(- Nyquist Sampling Criterion: f_s >= 2 * f_max to prevent aliasing) Tj
+0 -16 Td
+(- Note: Sample educational revision sheet provided by Academic Insight.) Tj
+0 -16 Td
+ET
+endstream
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000241 00000 n 
+0000001124 00000 n 
+trailer
+<< /Size 6 /Root 1 0 R >>
+startxref
+1194
+%%EOF

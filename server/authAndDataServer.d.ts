@@ -110,6 +110,11 @@ export function serverResetDemoDataset(
   token: string | null | undefined
 ): ServerDataResult;
 
+export function verifyPublicStudyNotePdfOnDisk(relativeUrl: string): {
+  exists: boolean;
+  isValidPdf: boolean;
+};
+
 export function createAcademicInsightRbacPlugin(): {
   name: string;
   configureServer: (server: unknown) => void;

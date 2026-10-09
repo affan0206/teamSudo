@@ -1,0 +1,59 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>
+endobj
+4 0 obj
+<< /Length 846 >>
+stream
+BT
+/F1 16 Tf
+50 750 Td
+(Mathematics Study Notes \(MA401\)) Tj
+/F1 10 Tf
+0 -20 Td
+(Academic Insight - Public Sample Revision Summary) Tj
+0 -24 Td
+/F1 11 Tf
+(Module 1: Eigenvalues, Eigenvectors & Matrix Diagonalization) Tj
+0 -16 Td
+(- Eigenvalue equation: A v = lambda v  <=>  det\(A - lambda I\) = 0) Tj
+0 -16 Td
+(- Trace identity: sum of eigenvalues = tr\(A\); Determinant = product of eigenvalues) Tj
+0 -16 Td
+(- Worked Example: For A = [[4, 1], [2, 3]], lambda^2 - 7*lambda + 10 = 0 => lambda = 5, 2) Tj
+0 -16 Td
+() Tj
+0 -16 Td
+(Module 2: Conditional Probability & Bayes Theorem) Tj
+0 -16 Td
+(- Bayes Formula: P\(B_i | A\) = P\(A | B_i\) P\(B_i\) / sum_j P\(A | B_j\) P\(B_j\)) Tj
+0 -16 Td
+(- Variance Identity: Var\(X\) = E[X^2] - \(E[X]\)^2) Tj
+0 -16 Td
+(- Note: Sample educational revision sheet provided by Academic Insight.) Tj
+0 -16 Td
+ET
+endstream
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000241 00000 n 
+0000001138 00000 n 
+trailer
+<< /Size 6 /Root 1 0 R >>
+startxref
+1208
+%%EOF

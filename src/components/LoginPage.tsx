@@ -16,11 +16,13 @@ import { ThemeToggle } from './ThemeToggle';
 interface LoginPageProps {
   onLoginSuccess: (user: AuthenticatedUserProfile) => void;
   accessErrorMessage?: string | null;
+  onNavigateHome?: () => void;
 }
 
 export const LoginPage: React.FC<LoginPageProps> = ({
   onLoginSuccess,
   accessErrorMessage,
+  onNavigateHome,
 }) => {
   const [mode, setMode] = useState<'SIGN_IN' | 'RESET_PASSWORD'>('SIGN_IN');
   const [email, setEmail] = useState('');
@@ -98,14 +100,23 @@ export const LoginPage: React.FC<LoginPageProps> = ({
     <div className="min-h-screen bg-ghost text-carbon grid grid-cols-1 lg:grid-cols-12">
       {/* Left Brand Panel (Night Bordeaux #450920) */}
       <aside className="hidden lg:flex lg:col-span-6 bg-sidebar text-sidebar-text border-r border-sidebar-border swiss-grid-pattern-dark flex-col justify-between p-12 xl:p-16 relative overflow-hidden">
-        <div className="relative z-10 flex items-center gap-3">
+        <a
+          href="/"
+          onClick={(e) => {
+            if (onNavigateHome) {
+              e.preventDefault();
+              onNavigateHome();
+            }
+          }}
+          className="relative z-10 inline-flex items-center gap-3 self-start"
+        >
           <div className="w-9 h-9 rounded-lg bg-apricot text-bordeaux flex items-center justify-center shadow-card">
             <BookOpenCheck className="w-5 h-5" />
           </div>
           <span className="font-display text-base font-bold tracking-tight text-sidebar-text">
             Academic Insight
           </span>
-        </div>
+        </a>
 
         <div className="relative z-10 max-w-md my-auto space-y-5">
           <h1 className="font-display text-3xl xl:text-4xl font-bold tracking-tight text-sidebar-text leading-tight">
@@ -141,14 +152,19 @@ export const LoginPage: React.FC<LoginPageProps> = ({
       {/* Right Sign-In Workspace */}
       <main className="lg:col-span-6 flex flex-col justify-between px-6 py-8 sm:px-12 lg:px-16 bg-ghost">
         <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2.5 lg:invisible">
-            <div className="w-8 h-8 rounded-lg bg-sidebar text-sidebar-text flex items-center justify-center shadow-card">
-              <BookOpenCheck className="w-4 h-4" />
-            </div>
-            <span className="font-display text-sm font-bold text-carbon">
-              Academic Insight
-            </span>
-          </div>
+          <a
+            href="/"
+            onClick={(e) => {
+              if (onNavigateHome) {
+                e.preventDefault();
+                onNavigateHome();
+              }
+            }}
+            className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-medium text-ink-secondary hover:text-carbon transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4 text-bluebell" />
+            <span>Back to Home</span>
+          </a>
           <ThemeToggle showLabel />
         </div>
 

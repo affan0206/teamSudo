@@ -1,0 +1,59 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>
+endobj
+4 0 obj
+<< /Length 811 >>
+stream
+BT
+/F1 16 Tf
+50 750 Td
+(Digital Electronics Study Notes \(EC204\)) Tj
+/F1 10 Tf
+0 -20 Td
+(Academic Insight - Public Sample Revision Summary) Tj
+0 -24 Td
+/F1 11 Tf
+(Module 1: Boolean Algebra & Karnaugh Map Minimization) Tj
+0 -16 Td
+(- De Morgan Laws: \(A.B\)' = A' + B' , \(A + B\)' = A' . B') Tj
+0 -16 Td
+(- Consensus Theorem: A B + A' C + B C = A B + A' C) Tj
+0 -16 Td
+(- K-Map uses Gray code ordering \(00, 01, 11, 10\) to group power-of-2 minterms.) Tj
+0 -16 Td
+() Tj
+0 -16 Td
+(Module 2: Synchronous Sequential Circuits & Timing) Tj
+0 -16 Td
+(- Flip-Flop equations: D: Q\(t+1\) = D , JK: Q\(t+1\) = J Q' + K' Q , T: Q\(t+1\) = T xor Q) Tj
+0 -16 Td
+(- Max clock frequency: T_clk >= t_cq + t_logic,max + t_su) Tj
+0 -16 Td
+(- Note: Sample educational revision sheet provided by Academic Insight.) Tj
+0 -16 Td
+ET
+endstream
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000241 00000 n 
+0000001103 00000 n 
+trailer
+<< /Size 6 /Root 1 0 R >>
+startxref
+1173
+%%EOF

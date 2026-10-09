@@ -40,6 +40,9 @@ import {
 } from './services/dataService';
 import { evaluateCohort } from './services/riskEngine';
 import { LoginPage } from './components/LoginPage';
+import { LandingPage } from './components/LandingPage';
+import { StudyNotesView } from './components/StudyNotesView';
+import { LandingSectionId } from './components/PublicNavbar';
 import { OverviewDashboard } from './components/OverviewDashboard';
 import { StudentDirectory } from './components/StudentDirectory';
 import { StudentProfileView } from './components/StudentProfileView';
@@ -51,11 +54,20 @@ import { ThemeToggle } from './components/ThemeToggle';
 
 type FacultyTab = 'OVERVIEW' | 'DIRECTORY' | 'PROFILE' | 'RECORDS' | 'INTERVENTIONS';
 
+function normalizePathname(rawPathname: string): string {
+  return rawPathname.replace(/\/+$/, '') || '/';
+}
+
+function isPublicPathname(pathname: string): boolean {
+  const clean = normalizePathname(pathname);
+  return clean === '/' || clean === '/notes' || clean.startsWith('/notes/');
+}
+
 function parsePathToFacultyTab(pathname: string): {
   tab: FacultyTab;
   studentIdFromUrl?: string;
 } {
-  const clean = pathname.replace(/\/+$/, '') || '/';
+  const clean = normalizePathname(pathname);
   if (clean.startsWith('/faculty/students/')) {
     const id = clean.replace('/faculty/students/', '').trim();
     return { tab: 'PROFILE', studentIdFromUrl: id || undefined };
@@ -82,6 +94,13 @@ function facultyTabToPath(tab: FacultyTab, studentId?: string): string {
 }
 
 export function App() {
+  const [currentPath, setCurrentPath] = useState<string>(() =>
+    normalizePathname(window.location.pathname)
+  );
+  const [intendedRedirectPath, setIntendedRedirectPath] = useState<string | null>(
+    null
+  );
+
   const [authLoading, setAuthLoading] = useState<boolean>(true);
   const [currentUser, setCurrentUser] = useState<AuthenticatedUserProfile | null>(null);
   const [authErrorBanner, setAuthErrorBanner] = useState<string | null>(null);
@@ -105,18 +124,20 @@ export function App() {
   }, []);
 
   const navigatePath = useCallback((nextPath: string, replace = false) => {
-    if (window.location.pathname !== nextPath) {
+    const cleanNext = normalizePathname(nextPath);
+    if (window.location.pathname !== cleanNext) {
       if (replace) {
-        window.history.replaceState({}, '', nextPath);
+        window.history.replaceState({}, '', cleanNext);
       } else {
-        window.history.pushState({}, '', nextPath);
+        window.history.pushState({}, '', cleanNext);
       }
     }
+    setCurrentPath(cleanNext);
   }, []);
 
   const synchronizeRouteWithRole = useCallback(
     (user: AuthenticatedUserProfile, rawPathname: string, rawSearch: string) => {
-      const cleanPath = rawPathname.replace(/\/+$/, '') || '/';
+      const cleanPath = normalizePathname(rawPathname);
       const params = new URLSearchParams(rawSearch);
 
       if (user.role === 'STUDENT') {
@@ -148,7 +169,8 @@ export function App() {
       if (
         cleanPath === '/' ||
         cleanPath === '/login' ||
-        cleanPath.startsWith('/student')
+        cleanPath.startsWith('/student') ||
+        isPublicPathname(cleanPath)
       ) {
         setActiveTab('OVERVIEW');
         navigatePath('/faculty/overview', true);
@@ -160,6 +182,7 @@ export function App() {
       if (parsed.studentIdFromUrl) {
         setSelectedStudentId(parsed.studentIdFromUrl);
       }
+      navigatePath(cleanPath, true);
     },
     [navigatePath, showToast]
   );
@@ -199,26 +222,40 @@ export function App() {
     let mounted = true;
     (async () => {
       setAuthLoading(true);
+      const initialCleanPath = normalizePathname(window.location.pathname);
       const session = await verifyCurrentSession();
       if (!mounted) return;
 
       if (!session.authenticated || !session.user) {
         setCurrentUser(null);
         setDataset(null);
-        if (window.location.pathname !== '/login') {
+        // Allow public routes ('/', '/notes', '/notes/:slug') and '/login' without redirecting
+        if (!isPublicPathname(initialCleanPath) && initialCleanPath !== '/login') {
+          setIntendedRedirectPath(initialCleanPath);
+          setAuthErrorBanner(
+            'Authentication required. Please sign in to access academic portals.'
+          );
           navigatePath('/login', true);
+        } else {
+          setCurrentPath(initialCleanPath);
         }
         setAuthLoading(false);
         return;
       }
 
       setCurrentUser(session.user);
-      synchronizeRouteWithRole(
-        session.user,
-        window.location.pathname,
-        window.location.search
-      );
-      await loadAuthorizedData(session.user);
+      if (isPublicPathname(initialCleanPath)) {
+        // Keep public route visible if explicitly opened, while preloading authorized dataset
+        setCurrentPath(initialCleanPath);
+        await loadAuthorizedData(session.user);
+      } else {
+        synchronizeRouteWithRole(
+          session.user,
+          initialCleanPath,
+          window.location.search
+        );
+        await loadAuthorizedData(session.user);
+      }
       if (mounted) {
         setAuthLoading(false);
       }
@@ -232,13 +269,24 @@ export function App() {
   // Listen to browser Back/Forward navigation and enforce role guards
   useEffect(() => {
     const handlePopState = () => {
-      if (!currentUser) {
-        navigatePath('/login', true);
+      const nextClean = normalizePathname(window.location.pathname);
+      setCurrentPath(nextClean);
+
+      if (isPublicPathname(nextClean)) {
         return;
       }
+
+      if (!currentUser) {
+        if (nextClean !== '/login') {
+          setIntendedRedirectPath(nextClean);
+          navigatePath('/login', true);
+        }
+        return;
+      }
+
       synchronizeRouteWithRole(
         currentUser,
-        window.location.pathname,
+        nextClean,
         window.location.search
       );
     };
@@ -249,7 +297,9 @@ export function App() {
   const handleLoginSuccess = async (user: AuthenticatedUserProfile) => {
     setAuthErrorBanner(null);
     setCurrentUser(user);
-    synchronizeRouteWithRole(user, window.location.pathname, window.location.search);
+    const targetAfterLogin = intendedRedirectPath || '/login';
+    setIntendedRedirectPath(null);
+    synchronizeRouteWithRole(user, targetAfterLogin, window.location.search);
     await loadAuthorizedData(user);
   };
 
@@ -260,6 +310,70 @@ export function App() {
     setMobileMenuOpen(false);
     navigatePath('/login', true);
   };
+
+  const handleNavigateHome = useCallback(() => {
+    navigatePath('/');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [navigatePath]);
+
+  const handleNavigateLandingSection = useCallback(
+    (sectionId: LandingSectionId) => {
+      if (normalizePathname(window.location.pathname) !== '/') {
+        navigatePath('/');
+        setTimeout(() => {
+          if (sectionId === 'home') {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          } else {
+            document
+              .getElementById(sectionId)
+              ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }, 60);
+        return;
+      }
+
+      if (sectionId === 'home') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        document
+          .getElementById(sectionId)
+          ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    },
+    [navigatePath]
+  );
+
+  const handleOpenNotesDirectory = useCallback(() => {
+    navigatePath('/notes');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [navigatePath]);
+
+  const handleOpenSubjectNotes = useCallback(
+    (slug: string | null) => {
+      navigatePath(slug ? `/notes/${slug}` : '/notes');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    },
+    [navigatePath]
+  );
+
+  const handleNavigateLogin = useCallback(() => {
+    setAuthErrorBanner(null);
+    navigatePath('/login');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [navigatePath]);
+
+  const handleNavigateAuthorizedDashboard = useCallback(() => {
+    if (!currentUser) {
+      navigatePath('/login');
+      return;
+    }
+    if (currentUser.role === 'STUDENT') {
+      navigatePath('/student/portal');
+    } else {
+      navigatePath(facultyTabToPath(activeTab, selectedStudentId));
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [activeTab, currentUser, navigatePath, selectedStudentId]);
 
   const evaluations = useMemo(
     () => (dataset ? evaluateCohort(dataset, thresholds) : []),
@@ -423,6 +537,54 @@ export function App() {
     showToast('Risk rules updated.');
   };
 
+  // 1. Public Landing Page ('/')
+  if (currentPath === '/') {
+    return (
+      <LandingPage
+        onNavigateLogin={handleNavigateLogin}
+        onOpenNotesDirectory={handleOpenNotesDirectory}
+        onOpenSubjectNotes={(slug) => handleOpenSubjectNotes(slug)}
+        onNavigateDashboard={
+          currentUser ? handleNavigateAuthorizedDashboard : undefined
+        }
+        isAuthenticated={Boolean(currentUser)}
+      />
+    );
+  }
+
+  // 2. Public Study Notes Views ('/notes' and '/notes/:subjectSlug')
+  if (currentPath === '/notes' || currentPath.startsWith('/notes/')) {
+    const subjectSlug = currentPath.startsWith('/notes/')
+      ? currentPath.slice('/notes/'.length).trim() || undefined
+      : undefined;
+
+    return (
+      <StudyNotesView
+        subjectSlug={subjectSlug}
+        onNavigateHome={handleNavigateHome}
+        onNavigateSection={handleNavigateLandingSection}
+        onNavigateLogin={handleNavigateLogin}
+        onSelectSubjectSlug={handleOpenSubjectNotes}
+        onNavigateDashboard={
+          currentUser ? handleNavigateAuthorizedDashboard : undefined
+        }
+        isAuthenticated={Boolean(currentUser)}
+      />
+    );
+  }
+
+  // 3. Dedicated Login Page ('/login')
+  if (currentPath === '/login') {
+    return (
+      <LoginPage
+        onLoginSuccess={handleLoginSuccess}
+        accessErrorMessage={authErrorBanner}
+        onNavigateHome={handleNavigateHome}
+      />
+    );
+  }
+
+  // 4. Protected Routes ('/faculty/*' and '/student/*')
   if (authLoading) {
     return (
       <div className="min-h-screen bg-ghost flex items-center justify-center p-6">
@@ -439,6 +601,7 @@ export function App() {
       <LoginPage
         onLoginSuccess={handleLoginSuccess}
         accessErrorMessage={authErrorBanner}
+        onNavigateHome={handleNavigateHome}
       />
     );
   }

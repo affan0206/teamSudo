@@ -841,6 +841,22 @@ function attachApiMiddleware(middlewares) {
   });
 }
 
+export function verifyPublicStudyNotePdfOnDisk(relativeUrl) {
+  if (!relativeUrl || typeof relativeUrl !== 'string') {
+    return { exists: false, isValidPdf: false };
+  }
+  const cleanRel = relativeUrl.replace(/^\/+/, '');
+  const fullPath = path.join(__dirname, '..', 'public', cleanRel);
+  if (!fs.existsSync(fullPath)) {
+    return { exists: false, isValidPdf: false };
+  }
+  const content = fs.readFileSync(fullPath, 'utf8');
+  return {
+    exists: true,
+    isValidPdf: content.startsWith('%PDF-1.4') && content.includes('%%EOF'),
+  };
+}
+
 export function createAcademicInsightRbacPlugin() {
   return {
     name: 'academic-insight-rbac-server',
