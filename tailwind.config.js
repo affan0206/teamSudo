@@ -1,79 +1,98 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: 'class',
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
       colors: {
-        // Official Core Brand Palette
-        ghost: '#FFFAFF',
-        canvas: '#FFFAFF',
-        surface: '#FFFFFF',
-        subtle: '#F6F4F8',
-        carbon: '#1E1B18',
+        // Exact Approved 5-Color Palette
+        apricot: '#f9dbbd',
+        cotton: '#ffa5ab',
+        blush: '#da627d',
+        berry: '#a53860',
+        bordeaux: '#450920',
+
+        // Semantic Theme-Aware Tokens (RGB channels for full Tailwind opacity support)
+        ghost: 'rgb(var(--c-canvas) / <alpha-value>)',
+        canvas: 'rgb(var(--c-canvas) / <alpha-value>)',
+        surface: 'rgb(var(--c-surface) / <alpha-value>)',
+        subtle: 'rgb(var(--c-subtle) / <alpha-value>)',
+        carbon: 'rgb(var(--c-text-primary) / <alpha-value>)',
+
+        sidebar: {
+          DEFAULT: 'rgb(var(--c-sidebar-bg) / <alpha-value>)',
+          elevated: 'rgb(var(--c-sidebar-elevated) / <alpha-value>)',
+          text: 'rgb(var(--c-sidebar-text) / <alpha-value>)',
+          muted: 'rgb(var(--c-sidebar-muted) / <alpha-value>)',
+          border: 'rgb(var(--c-sidebar-border) / <alpha-value>)',
+        },
+
         imperial: {
-          DEFAULT: '#0A2463',
-          hover: '#071A4A',
-          light: '#EEF2FA',
-          subtle: '#F4F7FC',
-          border: '#C5D3EE',
+          DEFAULT: 'rgb(var(--c-primary) / <alpha-value>)',
+          hover: 'rgb(var(--c-primary-hover) / <alpha-value>)',
+          light: 'rgb(var(--c-primary-light) / <alpha-value>)',
+          subtle: 'rgb(var(--c-primary-subtle) / <alpha-value>)',
+          border: 'rgb(var(--c-primary-border) / <alpha-value>)',
         },
+
         bluebell: {
-          DEFAULT: '#3E92CC',
-          hover: '#2E7BB3',
-          light: '#EBF4FA',
-          subtle: '#F3F8FC',
-          border: '#B8D9F0',
+          DEFAULT: 'rgb(var(--c-accent) / <alpha-value>)',
+          hover: 'rgb(var(--c-accent-hover) / <alpha-value>)',
+          light: 'rgb(var(--c-accent-light) / <alpha-value>)',
+          subtle: 'rgb(var(--c-accent-subtle) / <alpha-value>)',
+          border: 'rgb(var(--c-accent-border) / <alpha-value>)',
         },
+
         magenta: {
-          DEFAULT: '#D8315B',
-          hover: '#B82349',
-          light: '#FDF2F5',
-          border: '#F5C6D3',
-          text: '#B42046',
+          DEFAULT: 'rgb(var(--c-danger) / <alpha-value>)',
+          hover: 'rgb(var(--c-danger-hover) / <alpha-value>)',
+          light: 'rgb(var(--c-danger-bg) / <alpha-value>)',
+          border: 'rgb(var(--c-danger-border) / <alpha-value>)',
+          text: 'rgb(var(--c-danger-text) / <alpha-value>)',
         },
-        // Neutral Borders & Surfaces
+
         stone: {
-          border: '#E5E2E7',
-          strong: '#CFCBD4',
-          muted: '#EFECE6',
+          border: 'rgb(var(--c-border) / <alpha-value>)',
+          strong: 'rgb(var(--c-border-strong) / <alpha-value>)',
+          muted: 'rgb(var(--c-subtle) / <alpha-value>)',
         },
-        // Typography Hierarchy anchored on Carbon Black (#1E1B18)
+
         ink: {
-          primary: '#1E1B18',
-          secondary: '#57534E',
-          muted: '#78736E',
+          primary: 'rgb(var(--c-text-primary) / <alpha-value>)',
+          secondary: 'rgb(var(--c-text-secondary) / <alpha-value>)',
+          muted: 'rgb(var(--c-text-muted) / <alpha-value>)',
         },
-        // Semantic Status Tokens
+
         status: {
           danger: {
-            bg: '#FDF2F5',
-            text: '#B42046',
-            border: '#F5C6D3',
-            dot: '#D8315B',
+            bg: 'rgb(var(--c-danger-bg) / <alpha-value>)',
+            text: 'rgb(var(--c-danger-text) / <alpha-value>)',
+            border: 'rgb(var(--c-danger-border) / <alpha-value>)',
+            dot: 'rgb(var(--c-danger-dot) / <alpha-value>)',
           },
           warning: {
-            bg: '#FFFBEB',
-            text: '#92400E',
-            border: '#FDE68A',
-            dot: '#D97706',
+            bg: 'rgb(var(--c-warning-bg) / <alpha-value>)',
+            text: 'rgb(var(--c-warning-text) / <alpha-value>)',
+            border: 'rgb(var(--c-warning-border) / <alpha-value>)',
+            dot: 'rgb(var(--c-warning-dot) / <alpha-value>)',
           },
           info: {
-            bg: '#EBF4FA',
-            text: '#0A2463',
-            border: '#B8D9F0',
-            dot: '#3E92CC',
+            bg: 'rgb(var(--c-info-bg) / <alpha-value>)',
+            text: 'rgb(var(--c-info-text) / <alpha-value>)',
+            border: 'rgb(var(--c-info-border) / <alpha-value>)',
+            dot: 'rgb(var(--c-info-dot) / <alpha-value>)',
           },
           success: {
-            bg: '#EBF4FA',
-            text: '#0A2463',
-            border: '#B8D9F0',
-            dot: '#3E92CC',
+            bg: 'rgb(var(--c-info-bg) / <alpha-value>)',
+            text: 'rgb(var(--c-info-text) / <alpha-value>)',
+            border: 'rgb(var(--c-info-border) / <alpha-value>)',
+            dot: 'rgb(var(--c-info-dot) / <alpha-value>)',
           },
           neutral: {
-            bg: '#F6F4F8',
-            text: '#57534E',
-            border: '#DDD9E0',
-            dot: '#78736E',
+            bg: 'rgb(var(--c-neutral-bg) / <alpha-value>)',
+            text: 'rgb(var(--c-neutral-text) / <alpha-value>)',
+            border: 'rgb(var(--c-neutral-border) / <alpha-value>)',
+            dot: 'rgb(var(--c-neutral-dot) / <alpha-value>)',
           },
         },
       },
@@ -104,11 +123,9 @@ export default {
         ],
       },
       boxShadow: {
-        card: '0 1px 3px 0 rgba(10, 36, 99, 0.04), 0 1px 2px -1px rgba(30, 27, 24, 0.03)',
-        elevated:
-          '0 14px 34px -6px rgba(10, 36, 99, 0.14), 0 4px 10px -2px rgba(30, 27, 24, 0.06)',
-        monolith:
-          '0 20px 44px -10px rgba(10, 36, 99, 0.28), 0 4px 12px -2px rgba(10, 36, 99, 0.12)',
+        card: 'var(--shadow-card)',
+        elevated: 'var(--shadow-elevated)',
+        monolith: 'var(--shadow-monolith)',
       },
     },
   },

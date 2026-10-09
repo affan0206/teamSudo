@@ -47,6 +47,7 @@ import { RecordsAndCsvView } from './components/RecordsAndCsvView';
 import { InterventionsBoard } from './components/InterventionsBoard';
 import { StudentSelfCheckView } from './components/StudentSelfCheckView';
 import { RiskThresholdsModal } from './components/RiskThresholdsModal';
+import { ThemeToggle } from './components/ThemeToggle';
 
 type FacultyTab = 'OVERVIEW' | 'DIRECTORY' | 'PROFILE' | 'RECORDS' | 'INTERVENTIONS';
 
@@ -500,32 +501,35 @@ export function App() {
   ];
 
   const renderSidebarContent = () => (
-    <div className="flex flex-col justify-between h-full bg-imperial text-ghost select-none">
+    <div className="flex flex-col justify-between h-full bg-sidebar text-sidebar-text border-r border-sidebar-border select-none">
       <div className="space-y-6">
         {/* Brand Masthead */}
-        <div className="px-5 pt-6 pb-5 border-b border-white/12 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-ghost text-imperial flex items-center justify-center shrink-0 shadow-card">
+        <div className="px-5 pt-6 pb-5 border-b border-sidebar-border flex items-center justify-between gap-2">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-8 h-8 rounded-lg bg-apricot text-bordeaux flex items-center justify-center shrink-0 shadow-card">
               <BookOpenCheck className="w-4 h-4" />
             </div>
-            <div>
-              <div className="font-display text-sm font-bold tracking-tight text-ghost leading-none">
+            <div className="min-w-0">
+              <div className="font-display text-sm font-bold tracking-tight text-sidebar-text leading-none truncate">
                 Academic Insight
               </div>
-              <div className="text-[11px] text-bluebell-border mt-1">
+              <div className="text-[11px] text-sidebar-muted mt-1 truncate">
                 {currentUser.role === 'FACULTY' ? 'Faculty Portal' : 'Student Portal'}
               </div>
             </div>
           </div>
 
-          <button
-            type="button"
-            onClick={() => setMobileMenuOpen(false)}
-            className="lg:hidden p-1 text-bluebell-border hover:text-ghost rounded transition-colors"
-            aria-label="Close navigation menu"
-          >
-            <X className="w-4 h-4" />
-          </button>
+          <div className="flex items-center gap-1.5 shrink-0">
+            <ThemeToggle variant="sidebar" />
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen(false)}
+              className="lg:hidden p-1.5 text-sidebar-muted hover:text-sidebar-text rounded-lg transition-colors"
+              aria-label="Close navigation menu"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
         </div>
 
         {/* Primary Navigation Links */}
@@ -541,22 +545,22 @@ export function App() {
                     onClick={() => handleSelectNavTab(id)}
                     className={`group relative w-full flex items-center justify-between px-3.5 py-2.5 text-sm rounded-lg transition-all duration-150 ${
                       isActive
-                        ? 'bg-white/14 text-ghost font-semibold shadow-card'
-                        : 'text-bluebell-border/85 hover:text-ghost hover:bg-white/8'
+                        ? 'bg-berry/55 text-sidebar-text font-semibold shadow-card border border-blush/35'
+                        : 'text-sidebar-text/80 hover:text-sidebar-text hover:bg-white/8'
                     }`}
                   >
                     {isActive && (
                       <span
                         aria-hidden="true"
-                        className="absolute left-0 top-2 bottom-2 w-1 rounded-r bg-bluebell"
+                        className="absolute left-0 top-2 bottom-2 w-1 rounded-r bg-cotton"
                       />
                     )}
                     <span className="flex items-center gap-3 truncate">
                       <Icon
                         className={`w-4 h-4 shrink-0 transition-colors ${
                           isActive
-                            ? 'text-bluebell'
-                            : 'text-bluebell-border/75 group-hover:text-ghost'
+                            ? 'text-cotton'
+                            : 'text-sidebar-muted/75 group-hover:text-sidebar-text'
                         }`}
                       />
                       <span className="truncate">{label}</span>
@@ -565,10 +569,10 @@ export function App() {
                       <span
                         className={`ml-2 text-xs font-mono tabular-nums px-2 py-0.5 rounded-md ${
                           badgeTone === 'danger'
-                            ? 'bg-magenta text-ghost font-semibold'
+                            ? 'bg-cotton text-bordeaux font-semibold'
                             : isActive
-                            ? 'bg-bluebell/30 text-ghost'
-                            : 'bg-white/10 text-bluebell-border'
+                            ? 'bg-blush/40 text-sidebar-text'
+                            : 'bg-white/10 text-sidebar-muted'
                         }`}
                       >
                         {badge}
@@ -582,13 +586,13 @@ export function App() {
         ) : (
           <div className="px-3">
             <nav aria-label="Student Navigation" className="space-y-1">
-              <div className="relative w-full flex items-center justify-between px-3.5 py-2.5 text-sm font-semibold rounded-lg bg-white/14 text-ghost shadow-card">
+              <div className="relative w-full flex items-center justify-between px-3.5 py-2.5 text-sm font-semibold rounded-lg bg-berry/55 text-sidebar-text border border-blush/35 shadow-card">
                 <span
                   aria-hidden="true"
-                  className="absolute left-0 top-2 bottom-2 w-1 rounded-r bg-bluebell"
+                  className="absolute left-0 top-2 bottom-2 w-1 rounded-r bg-cotton"
                 />
                 <span className="flex items-center gap-3">
-                  <GraduationCap className="w-4 h-4 shrink-0 text-bluebell" />
+                  <GraduationCap className="w-4 h-4 shrink-0 text-cotton" />
                   <span>Overview</span>
                 </span>
               </div>
@@ -598,28 +602,28 @@ export function App() {
       </div>
 
       {/* Secondary Settings & Identity Footer */}
-      <div className="p-4 border-t border-white/12 space-y-4 bg-imperial-hover/40">
+      <div className="p-4 border-t border-sidebar-border space-y-4 bg-sidebar-elevated/60">
         {currentUser.role === 'FACULTY' && (
-          <div className="grid grid-cols-2 gap-2 pb-3.5 border-b border-white/12">
+          <div className="grid grid-cols-2 gap-2 pb-3.5 border-b border-sidebar-border">
             <button
               type="button"
               onClick={() => {
                 setIsThresholdsModalOpen(true);
                 setMobileMenuOpen(false);
               }}
-              className="flex items-center justify-center gap-1.5 px-2.5 py-2 rounded-lg text-xs font-medium text-bluebell-border hover:text-ghost hover:bg-white/10 border border-white/10 transition-colors"
+              className="flex items-center justify-center gap-1.5 px-2.5 py-2 rounded-lg text-xs font-medium text-sidebar-text/90 hover:text-sidebar-text hover:bg-white/10 border border-white/12 transition-colors"
             >
-              <SlidersHorizontal className="w-3.5 h-3.5 text-bluebell shrink-0" />
+              <SlidersHorizontal className="w-3.5 h-3.5 text-cotton shrink-0" />
               <span className="truncate">Risk rules</span>
             </button>
 
             <button
               type="button"
               onClick={handleResetDemoData}
-              className="flex items-center justify-center gap-1.5 px-2.5 py-2 rounded-lg text-xs font-medium text-bluebell-border hover:text-ghost hover:bg-white/10 border border-white/10 transition-colors"
+              className="flex items-center justify-center gap-1.5 px-2.5 py-2 rounded-lg text-xs font-medium text-sidebar-text/90 hover:text-sidebar-text hover:bg-white/10 border border-white/12 transition-colors"
               title="Restore cohort records to default baseline"
             >
-              <RotateCcw className="w-3.5 h-3.5 text-bluebell shrink-0" />
+              <RotateCcw className="w-3.5 h-3.5 text-cotton shrink-0" />
               <span className="truncate">Reset data</span>
             </button>
           </div>
@@ -628,14 +632,14 @@ export function App() {
         <div className="space-y-3">
           <div className="flex items-center justify-between gap-2">
             <div className="min-w-0">
-              <div className="text-sm font-semibold text-ghost truncate">
+              <div className="text-sm font-semibold text-sidebar-text truncate">
                 {currentUser.fullName}
               </div>
-              <div className="text-xs text-bluebell-border/80 truncate">
+              <div className="text-xs text-sidebar-muted/85 truncate">
                 {currentUser.email}
               </div>
             </div>
-            <span className="text-[11px] font-medium px-2 py-0.5 rounded bg-bluebell/25 border border-bluebell/40 text-ghost shrink-0">
+            <span className="text-[11px] font-medium px-2 py-0.5 rounded bg-berry/50 border border-blush/50 text-sidebar-text shrink-0">
               {currentUser.role === 'FACULTY' ? 'Faculty' : 'Student'}
             </span>
           </div>
@@ -643,9 +647,9 @@ export function App() {
           <button
             type="button"
             onClick={handleLogout}
-            className="w-full inline-flex items-center justify-center gap-2 px-3 py-2 text-xs font-medium rounded-lg bg-white/10 hover:bg-white/18 text-ghost border border-white/15 transition-colors"
+            className="w-full inline-flex items-center justify-center gap-2 px-3 py-2 text-xs font-medium rounded-lg bg-white/10 hover:bg-white/18 text-sidebar-text border border-white/15 transition-colors"
           >
-            <LogOut className="w-3.5 h-3.5 text-bluebell-border" />
+            <LogOut className="w-3.5 h-3.5 text-cotton" />
             <span>Sign out</span>
           </button>
         </div>
@@ -661,41 +665,44 @@ export function App() {
       </aside>
 
       {/* Mobile & Tablet Top Header */}
-      <header className="lg:hidden sticky top-0 z-30 bg-imperial text-ghost border-b border-white/12 px-4 py-3.5 flex items-center justify-between shadow-card">
+      <header className="lg:hidden sticky top-0 z-30 bg-sidebar text-sidebar-text border-b border-sidebar-border px-4 py-3.5 flex items-center justify-between shadow-card">
         <div className="flex items-center gap-2.5">
           <button
             type="button"
             onClick={() => setMobileMenuOpen(true)}
-            className="p-1.5 -ml-1 text-bluebell-border hover:text-ghost rounded-lg border border-white/15 bg-white/10"
+            className="p-1.5 -ml-1 text-sidebar-muted hover:text-sidebar-text rounded-lg border border-white/15 bg-white/10"
             aria-label="Open navigation menu"
           >
             <Menu className="w-4 h-4" />
           </button>
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded bg-ghost text-imperial flex items-center justify-center">
+            <div className="w-6 h-6 rounded bg-apricot text-bordeaux flex items-center justify-center">
               <BookOpenCheck className="w-3.5 h-3.5" />
             </div>
-            <span className="font-display text-sm font-bold text-ghost">
+            <span className="font-display text-sm font-bold text-sidebar-text">
               Academic Insight
             </span>
           </div>
         </div>
 
-        <button
-          type="button"
-          onClick={handleLogout}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-white/15 bg-white/10 text-ghost hover:bg-white/20"
-        >
-          <LogOut className="w-3.5 h-3.5 text-bluebell-border" />
-          <span>Sign out</span>
-        </button>
+        <div className="flex items-center gap-2">
+          <ThemeToggle variant="sidebar" />
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-white/15 bg-white/10 text-sidebar-text hover:bg-white/20"
+          >
+            <LogOut className="w-3.5 h-3.5 text-cotton" />
+            <span>Sign out</span>
+          </button>
+        </div>
       </header>
 
       {/* Mobile Slide-Over Drawer */}
       {mobileMenuOpen && (
         <div className="fixed inset-0 z-50 lg:hidden flex">
           <div
-            className="fixed inset-0 bg-carbon/50 backdrop-blur-[1px]"
+            className="fixed inset-0 bg-bordeaux/65 backdrop-blur-[1px]"
             onClick={() => setMobileMenuOpen(false)}
           />
           <div className="relative w-64 max-w-[82vw] h-full shadow-elevated z-10">
@@ -708,9 +715,9 @@ export function App() {
       {toastMessage && (
         <div
           role="status"
-          className="fixed bottom-5 right-5 z-50 bg-imperial text-ghost px-4 py-3 rounded-lg shadow-elevated border border-bluebell/40 text-sm font-medium flex items-center gap-2.5 animate-view-enter"
+          className="fixed bottom-5 right-5 z-50 bg-sidebar text-sidebar-text px-4 py-3 rounded-lg shadow-elevated border border-blush/50 text-sm font-medium flex items-center gap-2.5 animate-view-enter"
         >
-          <span className="w-2 h-2 rounded-full bg-bluebell shrink-0" />
+          <span className="w-2 h-2 rounded-full bg-cotton shrink-0" />
           <span>{toastMessage}</span>
         </div>
       )}

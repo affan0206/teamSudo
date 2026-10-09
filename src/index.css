@@ -3,33 +3,191 @@
 @tailwind utilities;
 
 :root {
-  /* Core Approved Palette Tokens */
-  --color-primary: #0A2463;
-  --color-primary-hover: #071A4A;
-  --color-primary-light: #EEF2FA;
-  --color-primary-border: #C5D3EE;
+  /* 1. Approved Core Palette Custom Properties */
+  --soft-apricot: #f9dbbd;
+  --cotton-candy: #ffa5ab;
+  --blush-rose: #da627d;
+  --berry-crush: #a53860;
+  --night-bordeaux: #450920;
 
-  --color-secondary: #3E92CC;
-  --color-secondary-hover: #2E7BB3;
-  --color-secondary-light: #EBF4FA;
-  --color-secondary-border: #B8D9F0;
+  /* 2. Light Mode Semantic Variables (Derived from the 5 approved palette colors) */
+  --color-background: #f9dbbd;
+  --color-surface: #fdf3e7;
+  --color-surface-subtle: #f3ceaf;
+  --color-border: #e3b89c;
+  --color-border-strong: #cf977b;
 
-  --color-background: #FFFAFF;
-  --color-surface: #FFFFFF;
-  --color-surface-subtle: #F6F4F8;
-  --color-border: #E5E2E7;
-  --color-border-strong: #CFCBD4;
+  --color-text: #450920;
+  --color-text-secondary: #6d1d3a;
+  --color-text-muted: #8c3553;
 
-  --color-danger: #D8315B;
-  --color-danger-bg: #FDF2F5;
-  --color-danger-text: #B42046;
-  --color-danger-border: #F5C6D3;
+  --color-primary: #a53860;
+  --color-primary-hover: #85284b;
+  --color-primary-contrast: #fdf3e7;
 
-  --color-text: #1E1B18;
-  --color-text-secondary: #57534E;
-  --color-text-muted: #78736E;
+  --color-secondary: #da627d;
+  --color-secondary-hover: #a53860;
+  --color-highlight: #ffa5ab;
+  --color-focus-ring: #da627d;
 
-  --color-focus-ring: #3E92CC;
+  /* Chart variables for Light Mode */
+  --chart-grid: #e8c4ab;
+  --chart-axis: #6d1d3a;
+  --chart-primary: #450920;
+  --chart-secondary: #a53860;
+  --chart-accent: #da627d;
+  --chart-area-stop: #da627d;
+  --chart-tooltip-bg: #fdf3e7;
+  --chart-tooltip-border: #d9a48c;
+  --chart-tooltip-text: #450920;
+
+  /* Shadows */
+  --shadow-card: 0 1px 3px 0 rgba(69, 9, 32, 0.06), 0 1px 2px -1px rgba(69, 9, 32, 0.04);
+  --shadow-elevated: 0 14px 34px -6px rgba(69, 9, 32, 0.16), 0 4px 10px -2px rgba(69, 9, 32, 0.08);
+  --shadow-monolith: 0 20px 44px -10px rgba(69, 9, 32, 0.28), 0 4px 12px -2px rgba(69, 9, 32, 0.14);
+
+  /* RGB Channel Triplets for Tailwind Opacity Modifiers (Light Mode) */
+  --c-canvas: 249 219 189;         /* #f9dbbd Soft Apricot */
+  --c-surface: 253 243 231;        /* #fdf3e7 Warm Apricot Surface */
+  --c-subtle: 243 206 175;         /* #f3ceaf Muted Apricot */
+
+  --c-text-primary: 69 9 32;       /* #450920 Night Bordeaux */
+  --c-text-secondary: 109 29 58;   /* #6d1d3a Deep Bordeaux-Berry */
+  --c-text-muted: 140 53 83;       /* #8c3553 Muted Berry */
+
+  --c-border: 227 184 156;         /* #e3b89c Warm Apricot-Rose Border */
+  --c-border-strong: 207 151 123;  /* #cf977b */
+
+  --c-sidebar-bg: 69 9 32;         /* #450920 Night Bordeaux */
+  --c-sidebar-elevated: 92 15 44;  /* #5c0f2c */
+  --c-sidebar-text: 249 219 189;   /* #f9dbbd Soft Apricot */
+  --c-sidebar-muted: 255 165 171;  /* #ffa5ab Cotton Candy */
+  --c-sidebar-border: 122 26 62;   /* #7a1a3e */
+
+  --c-primary: 165 56 96;          /* #a53860 Berry Crush */
+  --c-primary-hover: 133 40 75;    /* #85284b */
+  --c-primary-light: 251 224 230;  /* #fbe0e6 */
+  --c-primary-subtle: 248 228 216; /* #f8e4d8 */
+  --c-primary-border: 229 166 183; /* #e5a6b7 */
+
+  --c-accent: 165 56 96;           /* #a53860 Berry Crush for accessible links on light surface */
+  --c-accent-hover: 69 9 32;       /* #450920 Night Bordeaux */
+  --c-accent-light: 253 224 227;   /* #fde0e3 Cotton Candy tint */
+  --c-accent-subtle: 251 232 219;  /* #fbe8db */
+  --c-accent-border: 218 98 125;   /* #da627d Blush Rose */
+
+  --c-danger: 165 56 96;           /* #a53860 Berry Crush */
+  --c-danger-hover: 120 18 53;     /* #781235 */
+  --c-danger-bg: 253 222 227;      /* #fddee3 */
+  --c-danger-text: 120 18 53;      /* #781235 Deep Berry-Bordeaux */
+  --c-danger-border: 218 98 125;   /* #da627d Blush Rose */
+  --c-danger-dot: 165 56 96;       /* #a53860 Berry Crush */
+
+  --c-warning-bg: 249 212 194;     /* #f9d4c2 */
+  --c-warning-text: 109 29 58;     /* #6d1d3a */
+  --c-warning-border: 218 98 125;  /* #da627d Blush Rose */
+  --c-warning-dot: 218 98 125;     /* #da627d Blush Rose */
+
+  --c-info-bg: 247 227 208;        /* #f7e3d0 */
+  --c-info-text: 69 9 32;          /* #450920 Night Bordeaux */
+  --c-info-border: 219 175 149;    /* #dbaf95 */
+  --c-info-dot: 165 56 96;         /* #a53860 Berry Crush */
+
+  --c-neutral-bg: 243 206 175;     /* #f3ceaf */
+  --c-neutral-text: 109 29 58;     /* #6d1d3a */
+  --c-neutral-border: 220 182 156; /* #dcb69c */
+  --c-neutral-dot: 140 53 83;      /* #8c3553 */
+}
+
+/* 3. Dark Mode Semantic Variables */
+html.dark,
+[data-theme='dark'] {
+  --color-background: #450920;
+  --color-surface: #58112c;
+  --color-surface-subtle: #380719;
+  --color-border: #7c2043;
+  --color-border-strong: #a53860;
+
+  --color-text: #f9dbbd;
+  --color-text-secondary: #f2c2b6;
+  --color-text-muted: #d9999f;
+
+  --color-primary: #f9dbbd;
+  --color-primary-hover: #ffa5ab;
+  --color-primary-contrast: #450920;
+
+  --color-secondary: #ffa5ab;
+  --color-secondary-hover: #f9dbbd;
+  --color-highlight: #da627d;
+  --color-focus-ring: #ffa5ab;
+
+  /* Chart variables for Dark Mode */
+  --chart-grid: #721b3c;
+  --chart-axis: #f2c2b6;
+  --chart-primary: #f9dbbd;
+  --chart-secondary: #ffa5ab;
+  --chart-accent: #da627d;
+  --chart-area-stop: #ffa5ab;
+  --chart-tooltip-bg: #380719;
+  --chart-tooltip-border: #a53860;
+  --chart-tooltip-text: #f9dbbd;
+
+  /* Shadows in Dark Mode */
+  --shadow-card: 0 2px 6px 0 rgba(20, 2, 9, 0.35), 0 1px 2px -1px rgba(20, 2, 9, 0.25);
+  --shadow-elevated: 0 18px 38px -6px rgba(18, 2, 8, 0.55), 0 6px 14px -2px rgba(18, 2, 8, 0.35);
+  --shadow-monolith: 0 20px 44px -10px rgba(15, 1, 7, 0.6), 0 4px 12px -2px rgba(15, 1, 7, 0.4);
+
+  /* RGB Channel Triplets for Tailwind Opacity Modifiers (Dark Mode) */
+  --c-canvas: 69 9 32;             /* #450920 Night Bordeaux */
+  --c-surface: 88 17 44;           /* #58112c Elevated Bordeaux Surface */
+  --c-subtle: 56 7 25;             /* #380719 Deep Bordeaux Well */
+
+  --c-text-primary: 249 219 189;   /* #f9dbbd Soft Apricot */
+  --c-text-secondary: 242 194 182; /* #f2c2b6 Muted Apricot-Rose */
+  --c-text-muted: 217 153 159;     /* #d9999f Muted Cotton Candy */
+
+  --c-border: 124 32 67;           /* #7c2043 Bordeaux Divider */
+  --c-border-strong: 165 56 96;    /* #a53860 Berry Crush */
+
+  --c-sidebar-bg: 50 6 23;         /* #320617 Deepest Night Bordeaux Rail */
+  --c-sidebar-elevated: 72 11 34;  /* #480b22 */
+  --c-sidebar-text: 249 219 189;   /* #f9dbbd Soft Apricot */
+  --c-sidebar-muted: 255 165 171;  /* #ffa5ab Cotton Candy */
+  --c-sidebar-border: 110 25 57;   /* #6e1939 */
+
+  --c-primary: 249 219 189;        /* #f9dbbd Soft Apricot */
+  --c-primary-hover: 255 165 171;  /* #ffa5ab Cotton Candy */
+  --c-primary-light: 115 28 61;    /* #731c3d Berry-Bordeaux Pill */
+  --c-primary-subtle: 75 13 36;    /* #4b0d24 */
+  --c-primary-border: 165 56 96;   /* #a53860 Berry Crush */
+
+  --c-accent: 255 165 171;         /* #ffa5ab Cotton Candy Interactive Accent */
+  --c-accent-hover: 249 219 189;   /* #f9dbbd Soft Apricot */
+  --c-accent-light: 112 25 58;     /* #70193a */
+  --c-accent-subtle: 77 14 38;     /* #4d0e26 */
+  --c-accent-border: 218 98 125;   /* #da627d Blush Rose */
+
+  --c-danger: 255 165 171;         /* #ffa5ab Cotton Candy for high-contrast risk text */
+  --c-danger-hover: 218 98 125;    /* #da627d Blush Rose */
+  --c-danger-bg: 118 24 58;        /* #76183a Deep Berry-Bordeaux Alert Bg */
+  --c-danger-text: 255 165 171;    /* #ffa5ab Cotton Candy */
+  --c-danger-border: 218 98 125;   /* #da627d Blush Rose */
+  --c-danger-dot: 255 165 171;     /* #ffa5ab Cotton Candy */
+
+  --c-warning-bg: 98 20 49;        /* #621431 */
+  --c-warning-text: 249 219 189;   /* #f9dbbd Soft Apricot */
+  --c-warning-border: 218 98 125;  /* #da627d Blush Rose */
+  --c-warning-dot: 218 98 125;     /* #da627d Blush Rose */
+
+  --c-info-bg: 75 14 37;           /* #4b0e25 */
+  --c-info-text: 249 219 189;      /* #f9dbbd Soft Apricot */
+  --c-info-border: 165 56 96;      /* #a53860 Berry Crush */
+  --c-info-dot: 255 165 171;       /* #ffa5ab Cotton Candy */
+
+  --c-neutral-bg: 56 7 25;         /* #380719 */
+  --c-neutral-text: 242 194 182;   /* #f2c2b6 */
+  --c-neutral-border: 124 32 67;   /* #7c2043 */
+  --c-neutral-dot: 217 153 159;    /* #d9999f */
 }
 
 @layer base {
@@ -37,6 +195,12 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+    color-scheme: light;
+  }
+
+  html.dark,
+  [data-theme='dark'] {
+    color-scheme: dark;
   }
 
   body {
@@ -44,6 +208,7 @@
     color: var(--color-text);
     font-feature-settings: "cv02", "cv03", "cv04", "cv11", "ss01";
     line-height: 1.5;
+    transition: background-color 180ms ease, color 180ms ease;
   }
 
   h1, h2, h3 {
@@ -51,12 +216,11 @@
     letter-spacing: -0.025em;
   }
 
-  /* Enforce tabular numerals on all academic metrics, tables, and scores */
   .tabular-nums {
     font-variant-numeric: tabular-nums;
   }
 
-  /* Accessible keyboard focus ring using Blue Bell (#3E92CC) */
+  /* Accessible keyboard focus ring */
   *:focus-visible {
     outline: 2px solid var(--color-focus-ring);
     outline-offset: 2px;
@@ -76,33 +240,32 @@
 
 @layer utilities {
   .shadow-card {
-    box-shadow: 0 1px 3px 0 rgba(10, 36, 99, 0.04), 0 1px 2px -1px rgba(30, 27, 24, 0.03);
+    box-shadow: var(--shadow-card);
   }
 
   .shadow-elevated {
-    box-shadow: 0 14px 34px -6px rgba(10, 36, 99, 0.14), 0 4px 10px -2px rgba(30, 27, 24, 0.06);
+    box-shadow: var(--shadow-elevated);
   }
 
   .shadow-monolith {
-    box-shadow: 0 20px 44px -10px rgba(10, 36, 99, 0.28), 0 4px 12px -2px rgba(10, 36, 99, 0.12);
+    box-shadow: var(--shadow-monolith);
   }
 
   .animate-view-enter {
     animation: viewEnter 240ms cubic-bezier(0.22, 1, 0.36, 1) both;
   }
 
-  /* Subtle Swiss architectural grid pattern for hero & monolith surfaces */
   .swiss-grid-pattern {
     background-image:
-      linear-gradient(to right, rgba(10, 36, 99, 0.045) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(10, 36, 99, 0.045) 1px, transparent 1px);
+      linear-gradient(to right, rgba(165, 56, 96, 0.06) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(165, 56, 96, 0.06) 1px, transparent 1px);
     background-size: 32px 32px;
   }
 
   .swiss-grid-pattern-dark {
     background-image:
-      linear-gradient(to right, rgba(255, 250, 255, 0.06) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(255, 250, 255, 0.06) 1px, transparent 1px);
+      linear-gradient(to right, rgba(249, 219, 189, 0.06) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(249, 219, 189, 0.06) 1px, transparent 1px);
     background-size: 36px 36px;
   }
 }
@@ -120,32 +283,34 @@
 }
 
 @layer components {
-  /* Primary button: Imperial Blue (#0A2463) with Ghost White (#FFFAFF) text */
+  /* Primary button:
+     - Light mode: Berry Crush (#a53860) background with warm light label (#fdf3e7)
+     - Dark mode: Soft Apricot (#f9dbbd) background with Night Bordeaux (#450920) label */
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-150 active:scale-[0.99] disabled:opacity-45 disabled:pointer-events-none;
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold rounded-lg transition-all duration-150 active:scale-[0.99] disabled:opacity-45 disabled:pointer-events-none;
     background-color: var(--color-primary);
-    color: var(--color-background);
-    box-shadow: 0 1px 2px 0 rgba(10, 36, 99, 0.12);
+    color: var(--color-primary-contrast);
+    box-shadow: 0 1px 2px 0 rgba(69, 9, 32, 0.14);
   }
 
   .btn-primary:hover {
     background-color: var(--color-primary-hover);
-    box-shadow: 0 4px 12px -2px rgba(10, 36, 99, 0.2);
+    box-shadow: 0 4px 12px -2px rgba(69, 9, 32, 0.24);
   }
 
-  /* Secondary button: White surface with crisp border and Blue Bell hover accent */
+  /* Secondary button: Elevated surface with subtle border and Blush Rose / Cotton Candy hover */
   .btn-secondary {
     @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-150 active:scale-[0.99] disabled:opacity-45 disabled:pointer-events-none;
     background-color: var(--color-surface);
-    color: var(--color-primary);
+    color: var(--color-text);
     border: 1px solid var(--color-border);
-    box-shadow: 0 1px 2px 0 rgba(10, 36, 99, 0.03);
+    box-shadow: 0 1px 2px 0 rgba(69, 9, 32, 0.04);
   }
 
   .btn-secondary:hover {
-    background-color: var(--color-secondary-light);
-    border-color: var(--color-secondary-border);
-    color: var(--color-primary);
+    background-color: rgb(var(--c-accent-light));
+    border-color: rgb(var(--c-accent-border));
+    color: var(--color-text);
   }
 
   /* Tertiary button */
@@ -156,10 +321,10 @@
 
   .btn-tertiary:hover {
     background-color: var(--color-surface-subtle);
-    color: var(--color-primary);
+    color: var(--color-text);
   }
 
-  /* Form input field with Blue Bell focus border */
+  /* Form input field */
   .input-field {
     @apply w-full px-3.5 py-2.5 text-sm rounded-lg transition-all duration-150;
     color: var(--color-text);
@@ -173,8 +338,8 @@
 
   .input-field:focus {
     outline: none;
-    border-color: var(--color-secondary);
-    box-shadow: 0 0 0 3px rgba(62, 146, 204, 0.16);
+    border-color: var(--color-focus-ring);
+    box-shadow: 0 0 0 3px rgba(218, 98, 125, 0.22);
   }
 
   /* Surface card */
@@ -182,34 +347,35 @@
     background-color: var(--color-surface);
     border: 1px solid var(--color-border);
     border-radius: 0.75rem;
-    box-shadow: 0 1px 3px 0 rgba(10, 36, 99, 0.04), 0 1px 2px -1px rgba(30, 27, 24, 0.03);
+    box-shadow: var(--shadow-card);
+    transition: background-color 180ms ease, border-color 180ms ease;
   }
 
-  /* Imperial Blue Monolith Surface for high-contrast anchor sections */
+  /* Night Bordeaux structural surface */
   .monolith-surface {
-    background-color: var(--color-primary);
-    color: var(--color-background);
-    border: 1px solid rgba(62, 146, 204, 0.28);
+    background-color: rgb(var(--c-sidebar-bg));
+    color: rgb(var(--c-sidebar-text));
+    border: 1px solid rgb(var(--c-sidebar-border));
     border-radius: 0.75rem;
-    box-shadow: 0 16px 36px -10px rgba(10, 36, 99, 0.22), 0 4px 12px -2px rgba(10, 36, 99, 0.1);
+    box-shadow: var(--shadow-monolith);
   }
 }
 
-/* Restrained custom scrollbars */
+/* Custom scrollbars derived from the palette */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #F6F4F8;
+  background: var(--color-surface-subtle);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #CFCBD4;
+  background: var(--color-border-strong);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #3E92CC;
+  background: var(--blush-rose);
 }

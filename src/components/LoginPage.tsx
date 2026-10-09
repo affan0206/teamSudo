@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { sendPasswordResetRequest, signInWithEmailPassword } from '../services/authService';
 import { AuthenticatedUserProfile } from '../types/auth';
+import { ThemeToggle } from './ThemeToggle';
 
 interface LoginPageProps {
   onLoginSuccess: (user: AuthenticatedUserProfile) => void;
@@ -95,57 +96,60 @@ export const LoginPage: React.FC<LoginPageProps> = ({
 
   return (
     <div className="min-h-screen bg-ghost text-carbon grid grid-cols-1 lg:grid-cols-12">
-      {/* Left Brand Panel (Imperial Blue #0A2463) */}
-      <aside className="hidden lg:flex lg:col-span-6 bg-imperial text-ghost swiss-grid-pattern-dark flex-col justify-between p-12 xl:p-16 relative overflow-hidden">
+      {/* Left Brand Panel (Night Bordeaux #450920) */}
+      <aside className="hidden lg:flex lg:col-span-6 bg-sidebar text-sidebar-text border-r border-sidebar-border swiss-grid-pattern-dark flex-col justify-between p-12 xl:p-16 relative overflow-hidden">
         <div className="relative z-10 flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg bg-ghost text-imperial flex items-center justify-center shadow-card">
+          <div className="w-9 h-9 rounded-lg bg-apricot text-bordeaux flex items-center justify-center shadow-card">
             <BookOpenCheck className="w-5 h-5" />
           </div>
-          <span className="font-display text-base font-bold tracking-tight text-ghost">
+          <span className="font-display text-base font-bold tracking-tight text-sidebar-text">
             Academic Insight
           </span>
         </div>
 
         <div className="relative z-10 max-w-md my-auto space-y-5">
-          <h1 className="font-display text-3xl xl:text-4xl font-bold tracking-tight text-ghost leading-tight">
+          <h1 className="font-display text-3xl xl:text-4xl font-bold tracking-tight text-sidebar-text leading-tight">
             Academic performance &amp; early-warning analytics.
           </h1>
-          <p className="text-sm text-bluebell-border/90 leading-relaxed">
+          <p className="text-sm text-sidebar-muted/90 leading-relaxed">
             Track assessment progress, attendance targets, and faculty support in one place.
           </p>
         </div>
 
-        <div className="relative z-10 grid grid-cols-3 border-t border-white/15 pt-6 gap-6">
+        <div className="relative z-10 grid grid-cols-3 border-t border-sidebar-border pt-6 gap-6">
           <div>
-            <div className="text-xs text-bluebell-border">Attendance target</div>
-            <div className="font-display text-xl font-bold text-ghost tabular-nums mt-1">
+            <div className="text-xs text-sidebar-muted">Attendance target</div>
+            <div className="font-display text-xl font-bold text-sidebar-text tabular-nums mt-1">
               75%
             </div>
           </div>
-          <div className="border-l border-white/15 pl-6">
-            <div className="text-xs text-bluebell-border">Passing score</div>
-            <div className="font-display text-xl font-bold text-ghost tabular-nums mt-1">
+          <div className="border-l border-sidebar-border pl-6">
+            <div className="text-xs text-sidebar-muted">Passing score</div>
+            <div className="font-display text-xl font-bold text-sidebar-text tabular-nums mt-1">
               50%
             </div>
           </div>
-          <div className="border-l border-white/15 pl-6">
-            <div className="text-xs text-bluebell-border">Access model</div>
-            <div className="font-display text-xl font-bold text-ghost mt-1">
+          <div className="border-l border-sidebar-border pl-6">
+            <div className="text-xs text-sidebar-muted">Access model</div>
+            <div className="font-display text-xl font-bold text-sidebar-text mt-1">
               Role-based
             </div>
           </div>
         </div>
       </aside>
 
-      {/* Right Sign-In Workspace (Ghost White #FFFAFF) */}
-      <main className="lg:col-span-6 flex flex-col justify-between px-6 py-10 sm:px-12 lg:px-16 bg-ghost">
-        <div className="flex items-center gap-2.5 lg:invisible">
-          <div className="w-8 h-8 rounded-lg bg-imperial flex items-center justify-center text-ghost shadow-card">
-            <BookOpenCheck className="w-4 h-4" />
+      {/* Right Sign-In Workspace */}
+      <main className="lg:col-span-6 flex flex-col justify-between px-6 py-8 sm:px-12 lg:px-16 bg-ghost">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5 lg:invisible">
+            <div className="w-8 h-8 rounded-lg bg-sidebar text-sidebar-text flex items-center justify-center shadow-card">
+              <BookOpenCheck className="w-4 h-4" />
+            </div>
+            <span className="font-display text-sm font-bold text-carbon">
+              Academic Insight
+            </span>
           </div>
-          <span className="font-display text-sm font-bold text-imperial">
-            Academic Insight
-          </span>
+          <ThemeToggle showLabel />
         </div>
 
         <div className="w-full max-w-[380px] mx-auto my-auto py-8 space-y-6 animate-view-enter">

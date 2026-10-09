@@ -331,7 +331,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
                 Cohort average
               </span>
               <span className="inline-flex items-center gap-1.5">
-                <span className="w-3 h-0.5 bg-magenta inline-block" />
+                <span className="w-3 h-0.5 bg-blush inline-block" />
                 High-risk average
               </span>
             </div>
@@ -345,42 +345,42 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
               >
                 <defs>
                   <linearGradient id="cohortAreaGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#3E92CC" stopOpacity={0.16} />
-                    <stop offset="95%" stopColor="#3E92CC" stopOpacity={0.0} />
+                    <stop offset="5%" stopColor="var(--chart-area-stop)" stopOpacity={0.22} />
+                    <stop offset="95%" stopColor="var(--chart-area-stop)" stopOpacity={0.0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#E5E2E7" vertical={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
                 <XAxis
                   dataKey="cycleLabel"
-                  tick={{ fontSize: 12, fill: '#57534E' }}
-                  axisLine={{ stroke: '#E5E2E7' }}
+                  tick={{ fontSize: 12, fill: 'var(--chart-axis)' }}
+                  axisLine={{ stroke: 'var(--chart-grid)' }}
                   tickLine={false}
                 />
                 <YAxis
                   domain={[25, 95]}
-                  tick={{ fontSize: 12, fill: '#78736E' }}
+                  tick={{ fontSize: 12, fill: 'var(--chart-axis)' }}
                   axisLine={false}
                   tickLine={false}
                   unit="%"
                 />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: '#FFFAFF',
-                    borderColor: '#E5E2E7',
+                    backgroundColor: 'var(--chart-tooltip-bg)',
+                    borderColor: 'var(--chart-tooltip-border)',
                     borderRadius: '8px',
                     fontSize: '12px',
-                    color: '#1E1B18',
-                    boxShadow: '0 10px 24px -4px rgba(10, 36, 99, 0.12)',
+                    color: 'var(--chart-tooltip-text)',
+                    boxShadow: 'var(--shadow-elevated)',
                   }}
                 />
                 <ReferenceLine
                   y={thresholds.passingScorePct}
-                  stroke="#3E92CC"
+                  stroke="var(--chart-accent)"
                   strokeDasharray="4 4"
                   label={{
                     value: `Target ${thresholds.passingScorePct}%`,
                     position: 'insideBottomRight',
-                    fill: '#3E92CC',
+                    fill: 'var(--chart-accent)',
                     fontSize: 11,
                   }}
                 />
@@ -394,18 +394,28 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
                   type="monotone"
                   dataKey="cohortAvgPct"
                   name="Cohort average (%)"
-                  stroke="#0A2463"
+                  stroke="var(--chart-primary)"
                   strokeWidth={2.25}
-                  dot={{ r: 4, fill: '#0A2463', stroke: '#FFFAFF', strokeWidth: 1.5 }}
+                  dot={{
+                    r: 4,
+                    fill: 'var(--chart-primary)',
+                    stroke: 'var(--chart-tooltip-bg)',
+                    strokeWidth: 1.5,
+                  }}
                 />
                 <Line
                   type="monotone"
                   dataKey="highRiskAvgPct"
                   name="High-risk average (%)"
-                  stroke="#D8315B"
+                  stroke="var(--chart-secondary)"
                   strokeWidth={2}
                   strokeDasharray="4 3"
-                  dot={{ r: 4, fill: '#D8315B', stroke: '#FFFAFF', strokeWidth: 1.5 }}
+                  dot={{
+                    r: 4,
+                    fill: 'var(--chart-secondary)',
+                    stroke: 'var(--chart-tooltip-bg)',
+                    strokeWidth: 1.5,
+                  }}
                 />
               </ComposedChart>
             </ResponsiveContainer>

@@ -64,7 +64,13 @@ interface StudentProfileViewProps {
   ) => Promise<string | undefined>;
 }
 
-const SUBJECT_LINE_COLORS = ['#0A2463', '#3E92CC', '#D8315B', '#57534E', '#1E1B18'];
+const SUBJECT_LINE_COLORS = [
+  'var(--chart-primary)',
+  'var(--blush-rose)',
+  'var(--cotton-candy)',
+  'var(--berry-crush)',
+  'var(--chart-axis)',
+];
 
 function formatConciseAlert(
   ev: RiskEvidenceItem,
@@ -664,7 +670,7 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
                             onChange={(e) =>
                               setAttDraft({ ...attDraft, attended: e.target.value })
                             }
-                            className="w-14 px-2 py-1 text-sm border border-stone-border rounded bg-white text-right"
+                            className="w-14 px-2 py-1 text-sm border border-stone-border rounded bg-surface text-carbon text-right"
                           />
                           <span>/</span>
                           <input
@@ -674,7 +680,7 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
                             onChange={(e) =>
                               setAttDraft({ ...attDraft, held: e.target.value })
                             }
-                            className="w-14 px-2 py-1 text-sm border border-stone-border rounded bg-white text-right"
+                            className="w-14 px-2 py-1 text-sm border border-stone-border rounded bg-surface text-carbon text-right"
                           />
                         </div>
                       ) : (
@@ -721,7 +727,7 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
                                   [asmtItem.assessment.id]: e.target.value,
                                 })
                               }
-                              className="w-16 px-2 py-1 text-sm border border-stone-border rounded bg-white text-right font-mono"
+                              className="w-16 px-2 py-1 text-sm border border-stone-border rounded bg-surface text-carbon text-right font-mono"
                             />
                           ) : asmtItem.marksObtained === null ? (
                             <span className="font-mono text-xs px-2 py-0.5 rounded bg-subtle text-ink-muted border border-stone-border">
@@ -814,33 +820,34 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
                 data={trajectoryData}
                 margin={{ top: 8, right: 12, left: -16, bottom: 4 }}
               >
-                <CartesianGrid strokeDasharray="3 3" stroke="#E5E2E7" vertical={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--chart-grid)" vertical={false} />
                 <XAxis
                   dataKey="period"
-                  tick={{ fontSize: 12, fill: '#57534E' }}
-                  axisLine={{ stroke: '#E5E2E7' }}
+                  tick={{ fontSize: 12, fill: 'var(--chart-axis)' }}
+                  axisLine={{ stroke: 'var(--chart-grid)' }}
                   tickLine={false}
                 />
                 <YAxis
                   domain={[0, 100]}
-                  tick={{ fontSize: 12, fill: '#78736E' }}
+                  tick={{ fontSize: 12, fill: 'var(--chart-axis)' }}
                   axisLine={false}
                   tickLine={false}
                   unit="%"
                 />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: '#FFFAFF',
-                    borderColor: '#E5E2E7',
+                    backgroundColor: 'var(--chart-tooltip-bg)',
+                    borderColor: 'var(--chart-tooltip-border)',
                     borderRadius: '8px',
                     fontSize: '12px',
-                    color: '#1E1B18',
+                    color: 'var(--chart-tooltip-text)',
+                    boxShadow: 'var(--shadow-elevated)',
                   }}
                 />
                 <Legend wrapperStyle={{ fontSize: '12px' }} />
                 <ReferenceLine
                   y={thresholds.passingScorePct}
-                  stroke="#D8315B"
+                  stroke="var(--blush-rose)"
                   strokeDasharray="4 4"
                 />
                 {evaluation.subjectSummaries.map((sub, idx) => (

@@ -46,7 +46,7 @@ export const RiskThresholdsModal: React.FC<RiskThresholdsModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-carbon/40 backdrop-blur-[1px] p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-bordeaux/65 backdrop-blur-[1px] p-4">
       <div className="bg-surface border border-stone-border rounded-xl shadow-elevated max-w-lg w-full overflow-hidden">
         <div className="flex items-center justify-between px-6 py-4 border-b border-stone-border bg-subtle/50">
           <div className="flex items-center gap-2.5">
